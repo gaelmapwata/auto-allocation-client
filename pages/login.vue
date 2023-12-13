@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="w-100 text-center mb-10">
-      <img src="~/assets/logo/nodejs-logo.jpg" alt="logo" class="logo">
+      <img src="~/assets/images/logo/UBA-Logo-white.svg" alt="logo-uba" class="logo-uba">
     </div>
     <div class="login-cotent">
       <v-row no-gutters style="height: 100%;">

@@ -35,7 +35,7 @@
         </div>
 
         <div class="text-center">
-          <img src="~/assets/logo/nodejs-logo.jpg" class="my-2" alt="logo" width="80">
+          <img src="~/assets/images/logo/UBA-Logo.svg" class="my-2" alt="logo-uba" width="80px">
         </div>
       </div>
     </div>

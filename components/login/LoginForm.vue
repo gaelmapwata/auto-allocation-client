@@ -1,6 +1,6 @@
 <template>
   <div class="login-form-container">
-    <h1>UBA-RDC E-TAX APP</h1>
+    <h1>UBA-RDC AUTO ALLOCATION</h1>
     <h2 class="text-primary">
       AUTHENTIFICATION
     </h2>

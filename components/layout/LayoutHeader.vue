@@ -2,7 +2,7 @@
   <v-card class="layout-header-container" rounded="xl" elevation="0">
     <template #text>
       <div class="d-flex justify-space-between align-center px-2">
-        <h1>ADMIN</h1>
+        <h1>AUTO ALLOCATION</h1>
 
         <div class="d-flex">
           <v-btn
