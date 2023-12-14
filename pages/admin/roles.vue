@@ -71,30 +71,33 @@
             <tr>
               <td :colspan="columns.length" class="mb-3">
                 <p class="mt-3">
-                  Liste de permissions pour <strong>"{{ item.raw.name }}"</strong>
+                  Liste de permissions pour <strong>"{{ item.name }}"</strong>
                 </p>
 
-                <div v-if="!item.raw.ressources.length" class="mt-2 mb-4">
+                <div v-if="!item.ressources || !item.ressources.length" class="mt-2 mb-4">
                   <v-chip>Aucune permission affectée</v-chip>
                 </div>
-                <div
-                  v-for="ressource in item.raw.ressources"
-                  :key="ressource.id"
-                  class="d-flex align-center"
-                >
-                  <v-chip
-                    class="mr-2 bg-primary"
-                    prepend-icon="mdi-shield-account"
-                    color="white"
+
+                <template v-if="item.ressources">
+                  <div
+                    v-for="ressource in item.ressources"
+                    :key="ressource.id"
+                    class="d-flex align-center"
                   >
-                    {{ ressource.name }}
-                  </v-chip>
-                  <v-chip-group>
-                    <v-chip v-for="permission in ressource.permissions" :key="permission.id">
-                      {{ permission.name }}
+                    <v-chip
+                      class="mr-2 bg-primary"
+                      prepend-icon="mdi-shield-account"
+                      color="white"
+                    >
+                      {{ ressource.name }}
                     </v-chip>
-                  </v-chip-group>
-                </div>
+                    <v-chip-group>
+                      <v-chip v-for="permission in ressource.permissions" :key="permission.id">
+                        {{ permission.name }}
+                      </v-chip>
+                    </v-chip-group>
+                  </div>
+                </template>
               </td>
             </tr>
           </template>
@@ -121,7 +124,6 @@
 </template>
 
 <script lang="ts" setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
 import { storeToRefs } from 'pinia'
 import { useRoleStore } from '@/stores/role'
 import { shouldHaveOneOfPermissions, userHasOneOfPermissions } from '@/utilities/auth.util'

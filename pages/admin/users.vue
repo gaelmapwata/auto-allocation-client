@@ -57,7 +57,7 @@
           </template>
           <template #[`item.roles`]="{ item }">
             <v-chip-group>
-              <v-chip v-for="role in item.raw.roles" :key="role.id">
+              <v-chip v-for="role in item.roles" :key="role.id">
                 {{ role.name }}
               </v-chip>
             </v-chip-group>
@@ -82,7 +82,6 @@
 </template>
 
 <script lang="ts" setup>
-import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import { useUserStore } from '@/stores/user'
 import { shouldHaveOneOfPermissions, userHasOneOfPermissions } from '@/utilities/auth.util'
 import { UserI } from '~/types/user'

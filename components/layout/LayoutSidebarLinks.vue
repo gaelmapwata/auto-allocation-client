@@ -112,6 +112,11 @@ const groupedMenuItems: Array<{
         text: 'Accueil',
         icon: 'mdi-view-dashboard',
         to: '/admin'
+      },
+      {
+        text: 'Transaction Airtel Money',
+        icon: 'mdi-bank-plus',
+        to: '/admin/ajout-transaction-airtel-money'
       }
     ]
   },

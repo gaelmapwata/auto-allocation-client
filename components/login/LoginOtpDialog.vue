@@ -58,7 +58,6 @@
 import { useField } from 'vee-validate'
 import { string } from 'yup'
 import { useSnackbarStore } from '@/stores/snackbar'
-import { VOtpInput } from 'vuetify/labs/VOtpInput'
 
 const { signIn } = useAuth()
 const snackbarStore = useSnackbarStore()
@@ -70,7 +69,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const loading = ref(false)
-const otp = ref<string | undefined>(undefined)
+const otp = ref<string>('')
 const { showErrorSnackbar, showSuccessSnackbar } = snackbarStore
 
 const { value: otpFieldValue, meta: otpFieldMeta } = useField('', string()
