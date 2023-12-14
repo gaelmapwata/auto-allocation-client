@@ -61,46 +61,89 @@
         <!-- eslint-disable-next-line vue/v-slot-style, vue/valid-v-slot -->
         <v-stepper-window-item value="saveTransaction">
           <div class="mx-auto my-5" style="max-width: 800px;">
-            <div v-if="kycDetails" class="mx-auto my-5">
-              <KYCDetailView :kyc-details="kycDetails" />
-            </div>
+            <Form
+              ref="transactionFormRef"
+              :validation-schema="stepTransactionSchema"
+              class="mt-10"
+              @submit="(saveTransaction as any)"
+            >
+              <div v-if="kycDetails" class="mx-auto my-5">
+                <KYCDetailView :kyc-details="kycDetails" />
+              </div>
 
-            <div class="d-flex justify-space-between mb-4">
-              <div>
-                <v-btn
-                  :disabled="saveLoading"
-                  variant="tonal"
-                  type="button"
-                  rounded="xl"
-                  @click="defineStep('msisdn')"
-                >
-                  <v-icon>mdi-arrow-left</v-icon>
-                  <span class="text-none ml-2">Précédant</span>
-                </v-btn>
+              <div class="mx-auto my-5" style="max-width: 400px;">
+                <Field v-slot="{ field, errorMessage }" name="amount">
+                  <v-text-field
+                    v-bind="field"
+                    :error-messages="errorMessage"
+                    variant="solo-filled"
+                    label="Insérer le montant de la transaction"
+                    placeholder="Montant"
+                    type="number"
+                    rounded
+                    flat
+                  />
+                </Field>
               </div>
-              <div>
-                <v-btn
-                  :loading="saveLoading"
-                  :disabled="saveLoading"
-                  color="primary"
-                  type="submit"
-                  rounded="xl"
-                  @click="saveTransaction()"
-                >
-                  <span class="text-none mr-2">Débuter le processus de paiement</span>
-                  <v-icon>mdi-arrow-top-right</v-icon>
-                </v-btn>
+
+              <div class="mx-auto my-5" style="max-width: 400px;">
+                <Field v-slot="{ field, errorMessage }" name="currency">
+                  <v-select
+                    v-bind="field"
+                    :items="['USD', 'CDF']"
+                    :error-messages="errorMessage"
+                    variant="solo-filled"
+                    label="Devise"
+                    rounded
+                    flat
+                  />
+                </Field>
               </div>
-            </div>
+
+              <div class="d-flex justify-space-between mb-4">
+                <div>
+                  <v-btn
+                    :disabled="saveLoading"
+                    variant="tonal"
+                    type="button"
+                    rounded="xl"
+                    @click="defineStep('msisdn')"
+                  >
+                    <v-icon>mdi-arrow-left</v-icon>
+                    <span class="text-none ml-2">Précédant</span>
+                  </v-btn>
+                </div>
+                <div>
+                  <v-btn
+                    :loading="saveLoading"
+                    :disabled="saveLoading"
+                    color="primary"
+                    type="submit"
+                    rounded="xl"
+                  >
+                    <span class="text-none mr-2">Débuter le processus de paiement</span>
+                    <v-icon>mdi-arrow-top-right</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+            </Form>
           </div>
         </v-stepper-window-item>
       </v-stepper-window>
     </v-stepper>
+
+    <CommonConfirmDialog
+      v-model="confirmDialogVisible"
+      :text="textConfirmDeletion"
+      action-icon="mdi-check"
+      action-text="Confirmer"
+      @confirm="onConfirmTransaction"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { object, string } from 'yup'
+import { number, object, string } from 'yup'
 import { useAirtelMoneyStore } from '@/stores/airtel-money'
 import { CheckKYCResponseI } from '~/types/airtel-money'
 
@@ -120,12 +163,19 @@ const { checkKYCByMsisdn } = airtelMoneyStore
 const stepOneSchema = object({
   msisdn: string().required()
 })
+const stepTransactionSchema = object({
+  amount: number().required(),
+  currency: string().required()
+})
 
 const step = ref('msisdn')
-const msisdnFormRef = ref(null)
+const msisdnFormRef = ref<any>(null)
+const transactionFormRef = ref<any>(null)
 const saveLoading = ref(false)
 const fetchKYCLoading = ref(false)
+const confirmDialogVisible = ref(false)
 const kycDetails = ref<CheckKYCResponseI>()
+const textConfirmDeletion = ref('')
 
 function defineStep (stepName: string) {
   step.value = stepName
@@ -142,5 +192,19 @@ function handleMsisdnDefined (values: { msisdn: string }) {
 }
 
 function saveTransaction () {
+  const { amount, currency } = transactionFormRef.value?.getValues() as {
+      amount: number, currency: string
+    }
+  const msisdn = msisdnFormRef.value?.getValues().msisdn
+
+  textConfirmDeletion.value = `Confirmer vous le virement
+      de ${amount} ${currency}
+      à ${msisdn} (${kycDetails.value?.first_name} ${kycDetails.value?.last_name})`
+
+  confirmDialogVisible.value = true
+}
+
+function onConfirmTransaction () {
+  // to implement
 }
 </script>

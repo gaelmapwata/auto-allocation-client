@@ -1,17 +1,11 @@
 export interface CheckKYCResponseI {
-  data: {
-    is_barred: boolean,
-    grade: string,
-    last_name: string,
-    registration: {
-        status: string
-    },
-    msisdn: string,
-    first_name: string,
-    is_pin_set: boolean
+  is_barred: boolean,
+  grade: string,
+  last_name: string,
+  registration: {
+      status: string
   },
-  status: {
-    message: string,
-    success: boolean
-  }
+  msisdn: string,
+  first_name: string,
+  is_pin_set: boolean
 }
