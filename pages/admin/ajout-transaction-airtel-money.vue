@@ -145,6 +145,7 @@
 <script lang="ts" setup>
 import { number, object, string } from 'yup'
 import { useAirtelMoneyStore } from '@/stores/airtel-money'
+import { useTransactionStore } from '@/stores/transaction'
 import { CheckKYCResponseI } from '~/types/airtel-money'
 
 definePageMeta({
@@ -157,8 +158,10 @@ useAdminBreadcrumb('mdi-bank-plus', [{
 }])
 
 const airtelMoneyStore = useAirtelMoneyStore()
+const transactionStore = useTransactionStore()
 
 const { checkKYCByMsisdn } = airtelMoneyStore
+const { storeTransaction } = transactionStore
 
 const stepOneSchema = object({
   msisdn: string().required()
@@ -205,6 +208,19 @@ function saveTransaction () {
 }
 
 function onConfirmTransaction () {
-  // to implement
+  saveLoading.value = true
+  storeTransaction({
+    ...transactionFormRef.value?.getValues(),
+    ...msisdnFormRef.value?.getValues(),
+    lastName: kycDetails.value?.last_name,
+    firstName: kycDetails.value?.first_name
+  })
+    .then(() => {
+      defineStep('msisdn')
+      msisdnFormRef.value?.resetForm()
+      transactionFormRef.value?.resetForm()
+      saveLoading.value = false
+    })
+    .catch(() => { saveLoading.value = false })
 }
 </script>
