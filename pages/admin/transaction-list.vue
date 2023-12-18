@@ -11,10 +11,27 @@
 
     <v-card :loading="transactionsLoading" class="mt-2" rounded="xl" elevation="0">
       <v-card-text>
+        <div class="d-flex justify-end">
+          <a :href="csvExportLink" target="_blank">
+            <v-btn
+              class="text-none"
+              color="primary"
+              rounded="xl"
+              elevation="0"
+              append-icon="mdi-file-excel"
+              @click="handleExportCsv()"
+            >
+              <span class="text-none">Exporter</span>
+            </v-btn>
+          </a>
+        </div>
+
+        <v-divider class="mt-4" />
+
         <v-data-table-server
           v-model:items-per-page="itemsPerPage"
           v-model:page="page"
-          :headers="headers"
+          :headers="(headers as any)"
           :items-length="totalItems"
           :items="transactions"
           :loading="transactionsLoading"
@@ -62,6 +79,7 @@
 import { formatters } from '@/utilities/formatter.util'
 import { TransactionI } from '@/types/transaction'
 import { useTransactionStore } from '@/stores/transaction'
+import { useSnackbarStore } from '@/stores/snackbar'
 
 definePageMeta({
   layout: 'admin'
@@ -72,8 +90,11 @@ useAdminBreadcrumb('mdi-security', [{
   href: '/admin/transaction-list'
 }])
 
+const config = useRuntimeConfig()
 const transactionStore = useTransactionStore()
+const snackbarStore = useSnackbarStore()
 const { fetchTransactions } = transactionStore
+const { showSuccessSnackbar } = snackbarStore
 
 const itemsPerPage = ref(10)
 const page = ref(1)
@@ -83,6 +104,17 @@ const filter = ref({
   success: true
 })
 const totalItems = ref(0)
+
+const csvExportLink = computed(() => {
+  const params = new URLSearchParams()
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in filter.value) {
+    if (Object.hasOwnProperty.call(filter.value, key)) {
+      params.append(key, String(filter.value[key]))
+    }
+  }
+  return `${config.public.baseURL}/transactions/download-csv?${params.toString()}`
+})
 
 const headers = [
   {
@@ -145,6 +177,10 @@ async function loadTransactions () {
   transactions.value = data
   totalItems.value = total
   transactionsLoading.value = false
+}
+
+function handleExportCsv () {
+  showSuccessSnackbar('Le téléchargement du ficher a été lancé')
 }
 
 loadTransactions()
