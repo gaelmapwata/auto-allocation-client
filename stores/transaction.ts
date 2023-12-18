@@ -51,9 +51,9 @@ export const useTransactionStore = defineStore('transaction', {
       { page, limit, filter }: {
         page: number,
         limit: number,
-        filter: { [key: string]: string | number | boolean }
+        filter?: { [key: string]: string | number | boolean }
       }
-    ) {
+    ): Promise<{ data: TransactionI[], total: number }> {
       return new Promise((resolve) => {
         useFetchApi('/transactions', {
           method: 'get',

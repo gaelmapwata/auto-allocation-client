@@ -40,6 +40,17 @@
           <span>Dernières transactions enregistrées</span>
         </p>
         <TransactionListRecent />
+        <div class="d-flex justify-center">
+          <v-btn
+            href="admin/transaction-list"
+            class="mt-4 text-none"
+            color="primary"
+            elevation="0"
+            rounded="xl"
+          >
+            Afficher toutes les transactions
+          </v-btn>
+        </div>
       </v-col>
     </v-row>
   </div>
