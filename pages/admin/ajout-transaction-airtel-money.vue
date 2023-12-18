@@ -100,6 +100,25 @@
                 </Field>
               </div>
 
+              <div
+                v-if="canManuallySetAccountNumber"
+                class="mx-auto my-5"
+                style="max-width: 400px;"
+              >
+                <Field v-slot="{ field, errorMessage }" name="accountNumber">
+                  <v-text-field
+                    v-bind="field"
+                    :error-messages="errorMessage"
+                    variant="solo-filled"
+                    label="Insérer le numéro de compte du client"
+                    placeholder="Numéro de compte"
+                    type="number"
+                    rounded
+                    flat
+                  />
+                </Field>
+              </div>
+
               <div class="d-flex justify-space-between mb-4">
                 <div>
                   <v-btn
@@ -147,6 +166,7 @@ import { number, object, string } from 'yup'
 import { useAirtelMoneyStore } from '@/stores/airtel-money'
 import { useTransactionStore } from '@/stores/transaction'
 import { CheckKYCResponseI } from '~/types/airtel-money'
+import { userHasOneOfPermissions } from '@/utilities/auth.util'
 
 definePageMeta({
   layout: 'admin'
@@ -163,13 +183,25 @@ const transactionStore = useTransactionStore()
 const { checkKYCByMsisdn } = airtelMoneyStore
 const { storeTransaction } = transactionStore
 
+const canManuallySetAccountNumber = userHasOneOfPermissions(['TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT'])
+
 const stepOneSchema = object({
   msisdn: string().required()
 })
-const stepTransactionSchema = object({
+const stepTransactionSchema = {
   amount: number().required(),
-  currency: string().required()
-})
+  currency: string().required(),
+  ...(
+    canManuallySetAccountNumber
+      ? {
+          accountNumber: string()
+            .required('Numéro de compte requis')
+            .matches(/^[0-9]*$/, 'Numéro de compte ne peut contenir que des chiffres')
+            .length(12, 'Numéro de compte doit avoir exactement 12 chiffres')
+        }
+      : {}
+  )
+}
 
 const step = ref('msisdn')
 const msisdnFormRef = ref<any>(null)
