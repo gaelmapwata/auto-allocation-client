@@ -46,6 +46,28 @@ export const useTransactionStore = defineStore('transaction', {
           resolve()
         })
       })
+    },
+    fetchTransactions (
+      { page, limit, filter }: {
+        page: number,
+        limit: number,
+        filter: { [key: string]: string | number | boolean }
+      }
+    ) {
+      return new Promise((resolve) => {
+        useFetchApi('/transactions', {
+          method: 'get',
+          params: {
+            page,
+            limit,
+            ...(filter || {})
+          }
+        }).then(({ data }) => {
+          if (data.value) {
+            resolve(data.value)
+          }
+        })
+      })
     }
   }
 })

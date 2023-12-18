@@ -1,3 +1,5 @@
+import { UserI } from './user'
+
 export interface TransactionI {
   msisdn: string;
   lastName: string;
@@ -8,4 +10,6 @@ export interface TransactionI {
   userId?: number;
   errorFinacle?: string;
   errorAirtelMoney?: string;
+  success: boolean;
+  user: UserI;
 }

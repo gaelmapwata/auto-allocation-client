@@ -39,6 +39,7 @@
           </v-icon>
           <span>Dernières transactions enregistrées</span>
         </p>
+        <TransactionListRecent />
       </v-col>
     </v-row>
   </div>
