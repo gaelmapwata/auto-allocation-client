@@ -2,8 +2,18 @@ import { defineStore } from 'pinia'
 import { useSnackbarStore } from '@/stores/snackbar'
 import { TransactionI } from '../types/transaction'
 
+const defaultStats = {
+  today: 0,
+  yesterday: 0,
+  currentMonth: 0,
+  currentWeek: 0
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export const useTransactionStore = defineStore('transaction', {
+  state: () => ({
+    stats: defaultStats
+  }),
   actions: {
     storeTransaction (transaction: TransactionI) {
       return new Promise((resolve, reject) => {
@@ -20,6 +30,20 @@ export const useTransactionStore = defineStore('transaction', {
           } else {
             reject()
           }
+        })
+      })
+    },
+    getTransactionsStats (): Promise<void> {
+      return new Promise((resolve) => {
+        useFetchApi('/transactions/stats', {
+          method: 'get'
+        }).then(({ data }) => {
+          if (data.value) {
+            this.stats = data.value
+          } else {
+            this.stats = defaultStats
+          }
+          resolve()
         })
       })
     }
