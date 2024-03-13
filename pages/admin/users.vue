@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="d-flex mb-4 justify-end">
       <v-btn
-        v-if="userHasOneOfPermissions(['USER:ADD'])"
+        v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.CREATE])"
         prepend-icon="mdi-plus"
         color="primary"
         rounded="xl"
@@ -11,7 +11,7 @@
         <span class="text-none">Ajouter</span>
       </v-btn>
       <v-btn
-        v-if="userHasOneOfPermissions(['USER:EDIT'])"
+        v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.UPDATE])"
         :disabled="!selectedUser"
         prepend-icon="mdi-pencil"
         color="white"
@@ -22,7 +22,7 @@
         <span class="text-none">Modifier</span>
       </v-btn>
       <v-btn
-        v-if="userHasOneOfPermissions(['USER:DELETE'])"
+        v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.DELETE])"
         :disabled="!selectedUser || deletionInLoading"
         :loading="deletionInLoading"
         prepend-icon="mdi-delete"
@@ -83,19 +83,23 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
-import { shouldHaveOneOfPermissions, userHasOneOfPermissions } from '@/utilities/auth.util'
+import { PERMISSIONS, shouldHaveOneOfPermissions, userHasOneOfPermissions } from '@/utilities/auth.util'
 import { UserI } from '~/types/user'
 
 definePageMeta({
   layout: 'admin',
-  middleware: [(_, __, next) => shouldHaveOneOfPermissions({ next, permissions: ['USER:READ'] })]
-
+  middleware: [(_, __, next) => shouldHaveOneOfPermissions({
+    next, permissions: [PERMISSIONS.USER.READ]
+  })]
 })
 
 useAdminBreadcrumb('mdi-account-group', [{
   title: 'Utilisateurs',
   href: '/admin/users'
 }])
+
+const { data: currentUserData } = useAuth()
+const currentUser = currentUserData.value as UserI
 
 const userStore = useUserStore()
 const { fetchUsersWithPagination, deleteUser } = userStore

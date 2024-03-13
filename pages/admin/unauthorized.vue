@@ -1,13 +1,13 @@
 <template>
   <div class="page-mini-container">
-    <v-card rounded="xl">
+    <v-card rounded="xl" elevation="0">
       <v-card-text>
         <div class="text-center py-16">
           <h1 class="mb-10">
             Vous n'êtes pas autorisé à accéder à cette page
           </h1>
-          <v-btn to="/" color="primary">
-            Retourner à l'accueil
+          <v-btn to="/" color="primary" rounded="xl" elevation="0">
+            <span class="text-none">Retourner à l'accueil</span>
           </v-btn>
         </div>
       </v-card-text>

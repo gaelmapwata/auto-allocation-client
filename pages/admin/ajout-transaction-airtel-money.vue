@@ -71,52 +71,57 @@
                 <KYCDetailView :kyc-details="kycDetails" />
               </div>
 
-              <div class="mx-auto my-5" style="max-width: 400px;">
-                <Field v-slot="{ field, errorMessage }" name="amount">
-                  <v-text-field
-                    v-bind="field"
-                    :error-messages="errorMessage"
-                    variant="solo-filled"
-                    label="Insérer le montant de la transaction"
-                    placeholder="Montant"
-                    type="number"
-                    rounded
-                    flat
-                  />
-                </Field>
-              </div>
+              <div style="max-width: 400px;" class="mx-auto">
+                <div class="my-5">
+                  <Field v-slot="{ field, errorMessage }" name="amount">
+                    <v-text-field
+                      v-bind="field"
+                      :error-messages="errorMessage"
+                      variant="solo-filled"
+                      label="Insérer le montant de la transaction"
+                      placeholder="Montant"
+                      type="number"
+                      rounded
+                      flat
+                    />
+                  </Field>
+                </div>
 
-              <div class="mx-auto my-5" style="max-width: 400px;">
-                <Field v-slot="{ field, errorMessage }" name="currency">
-                  <v-select
-                    v-bind="field"
-                    :items="['USD', 'CDF']"
-                    :error-messages="errorMessage"
-                    variant="solo-filled"
-                    label="Devise"
-                    rounded
-                    flat
-                  />
-                </Field>
-              </div>
+                <div class="my-5">
+                  <Field v-slot="{ field, errorMessage }" name="currency">
+                    <v-select
+                      v-bind="field"
+                      :items="['USD', 'CDF']"
+                      :error-messages="errorMessage"
+                      variant="solo-filled"
+                      label="Devise"
+                      rounded
+                      flat
+                    />
+                  </Field>
+                </div>
 
-              <div
-                v-if="canManuallySetAccountNumber"
-                class="mx-auto my-5"
-                style="max-width: 400px;"
-              >
-                <Field v-slot="{ field, errorMessage }" name="accountNumber">
-                  <v-text-field
-                    v-bind="field"
-                    :error-messages="errorMessage"
-                    variant="solo-filled"
-                    label="Insérer le numéro de compte du client"
-                    placeholder="Numéro de compte"
-                    type="number"
-                    rounded
-                    flat
-                  />
-                </Field>
+                <div v-if="canManuallySetAccountNumber" class="my-5">
+                  <Field v-slot="{ field, errorMessage }" name="accountNumber">
+                    <v-text-field
+                      v-bind="field"
+                      :error-messages="errorMessage"
+                      variant="solo-filled"
+                      label="Insérer le numéro de compte du client"
+                      placeholder="Numéro de compte"
+                      type="number"
+                      rounded
+                      flat
+                    />
+                  </Field>
+                </div>
+
+                <p v-if="kycDetails?.is_barred" class="text-center mb-4">
+                  <v-icon class="mr-2" icon="mdi-alert" />
+                  <span class="text-red-500">
+                    Ce numéro de telephone a été bannie
+                  </span>
+                </p>
               </div>
 
               <div class="d-flex justify-space-between mb-4">
@@ -135,7 +140,7 @@
                 <div>
                   <v-btn
                     :loading="saveLoading"
-                    :disabled="saveLoading"
+                    :disabled="saveLoading || kycDetails?.is_barred"
                     color="primary"
                     type="submit"
                     rounded="xl"
@@ -166,10 +171,14 @@ import { number, object, string } from 'yup'
 import { useAirtelMoneyStore } from '@/stores/airtel-money'
 import { useTransactionStore } from '@/stores/transaction'
 import { CheckKYCResponseI } from '~/types/airtel-money'
-import { userHasOneOfPermissions } from '@/utilities/auth.util'
+import { Form } from 'vee-validate'
+import { PERMISSIONS, shouldHaveOneOfPermissions } from '~/utilities/auth.util'
 
 definePageMeta({
-  layout: 'admin'
+  layout: 'admin',
+  middleware: [(_, __, next) => shouldHaveOneOfPermissions({
+    next, permissions: [PERMISSIONS.TRANSACTION.CREATE]
+  })]
 })
 
 useAdminBreadcrumb('mdi-bank-plus', [{
@@ -183,7 +192,9 @@ const transactionStore = useTransactionStore()
 const { checkKYCByMsisdn } = airtelMoneyStore
 const { storeTransaction } = transactionStore
 
-const canManuallySetAccountNumber = userHasOneOfPermissions(['TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT'])
+const canManuallySetAccountNumber = useUserHasOneOfPermissions([
+  PERMISSIONS.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT
+])
 
 const stepOneSchema = object({
   msisdn: string().required()
@@ -204,8 +215,8 @@ const stepTransactionSchema = {
 }
 
 const step = ref('msisdn')
-const msisdnFormRef = ref<any>(null)
-const transactionFormRef = ref<any>(null)
+const msisdnFormRef = ref<typeof Form>()
+const transactionFormRef = ref<typeof Form>()
 const saveLoading = ref(false)
 const fetchKYCLoading = ref(false)
 const confirmDialogVisible = ref(false)

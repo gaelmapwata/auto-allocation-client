@@ -1,3 +1,5 @@
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false,
@@ -11,9 +13,15 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxtjs/eslint-module',
-    '@invictus.codes/nuxt-vuetify',
     '@vee-validate/nuxt',
-    '@sidebase/nuxt-auth'
+    '@sidebase/nuxt-auth',
+    (_options, nuxt) => {
+      nuxt.hooks.hook('vite:extendConfig', (config) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        config.plugins.push(vuetify({ autoImport: true }))
+      })
+    }
   ],
   vite: {
     css: {
@@ -22,23 +30,12 @@ export default defineNuxtConfig({
           additionalData: '@use "@/assets/scss/variables.scss" as *;'
         }
       }
-    }
-  },
-  vuetify: {
-    vuetifyOptions: {
-      theme: {
-        themes: {
-          light: {
-            dark: false,
-            colors: {
-              primary: '#D51709',
-              secondary: '#E4A79D'
-            }
-          }
-        }
-      }
     },
-    moduleOptions: {}
+    vue: {
+      template: {
+        transformAssetUrls
+      }
+    }
   },
   auth: {
     provider: {
@@ -59,7 +56,7 @@ export default defineNuxtConfig({
     globalAppMiddleware: true
   },
   build: {
-    transpile: ['@vuepic/vue-datepicker']
+    transpile: ['@vuepic/vue-datepicker', 'vuetify']
   },
   typescript: {
     strict: true,

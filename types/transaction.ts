@@ -11,5 +11,7 @@ export interface TransactionI {
   errorFinacle?: string;
   errorAirtelMoney?: string;
   success: boolean;
+  error: string;
   user: UserI;
+  createdAt?: string;
 }

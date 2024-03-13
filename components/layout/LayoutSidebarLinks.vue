@@ -1,7 +1,10 @@
 <template>
   <template v-for="menuItem in groupedMenuItems" :key="menuItem.text">
     <div
-      v-if="userHasOneOfPermissions(menuItem.items?.flatMap(item => item?.permissions || []))"
+      v-if="userHasOneOfPermissions(
+        currentUser,
+        menuItem.items?.flatMap(item => item?.permissions || [])
+      )"
     >
       <small class="ml-3">{{ menuItem.text }}</small>
       <v-card density="compact" class="mt-1 mb-3" rounded="xl" elevation="0">
@@ -10,9 +13,10 @@
             <template v-for="(item, index) in menuItem.items" :key="item.text">
               <template
                 v-if="
-                  userHasOneOfPermissions(
-                    item.subItems?.flatMap(subItem => subItem?.permissions || []) || []
-                  )"
+                  userHasOneOfPermissions(currentUser, [
+                    ...item.subItems?.flatMap(subItem => subItem?.permissions || []) || [],
+                    ...item.permissions || []
+                  ])"
               >
                 <v-list-group :value="index">
                   <template #activator="{ props }">
@@ -40,7 +44,9 @@
                       :key="subItem.text"
                     >
                       <v-list-item
-                        v-if="userHasOneOfPermissions(subItem?.permissions || [])"
+                        v-if="userHasOneOfPermissions(
+                          currentUser, subItem?.permissions || []
+                        )"
                         :to="subItem.to"
                         append-icon="mdi-chevron-right"
                         color="primary"
@@ -87,9 +93,11 @@
 </template>
 
 <script lang="ts" setup>
-import { userHasOneOfPermissions } from '@/utilities/auth.util'
+import { PERMISSIONS, userHasOneOfPermissions } from '@/utilities/auth.util'
+import { UserI } from '~/types/user'
 
-const { signOut } = useAuth()
+const { signOut, data: currentUserData } = useAuth()
+const currentUser = currentUserData.value as UserI
 
 const groupedMenuItems: Array<{
   text: string,
@@ -111,17 +119,20 @@ const groupedMenuItems: Array<{
       {
         text: 'Accueil',
         icon: 'mdi-view-dashboard',
-        to: '/admin'
+        to: '/admin',
+        permissions: [PERMISSIONS.TRANSACTION.READ, PERMISSIONS.TRANSACTION.READ_OWN_TRANSACTIONS]
       },
       {
         text: 'Transaction Airtel Money',
         icon: 'mdi-bank-plus',
-        to: '/admin/ajout-transaction-airtel-money'
+        to: '/admin/ajout-transaction-airtel-money',
+        permissions: [PERMISSIONS.TRANSACTION.CREATE]
       },
       {
         text: 'Transactions',
         icon: 'mdi-bank',
-        to: '/admin/transaction-list'
+        to: '/admin/transaction-list',
+        permissions: [PERMISSIONS.TRANSACTION.READ, PERMISSIONS.TRANSACTION.READ_OWN_TRANSACTIONS]
       }
     ]
   },
@@ -132,13 +143,13 @@ const groupedMenuItems: Array<{
         text: 'Utilisateurs',
         icon: 'mdi-account-group',
         to: '/admin/users',
-        permissions: ['USER:ADD']
+        permissions: [PERMISSIONS.USER.READ]
       },
       {
         text: 'Roles',
         icon: 'mdi-security',
         to: '/admin/roles',
-        permissions: ['ROLE:ADD']
+        permissions: [PERMISSIONS.ROLE.READ]
       }
     ]
   }

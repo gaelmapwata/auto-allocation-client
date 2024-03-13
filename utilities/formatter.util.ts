@@ -19,11 +19,11 @@ export const formatters = {
     }
     return format(date, 'HH:mm, dd/MM/yyyy')
   },
-  formatPrice (price: string) {
+  formatPrice (price: string | number) {
     if (!price) {
       return 0
     }
-    return parseFloat(price).toString()
+    return parseFloat(price.toString()).toString()
       .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
   },
   formatTel (tel: string) {

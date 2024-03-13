@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="d-flex mb-4 justify-end">
       <v-btn
-        v-if="userHasOneOfPermissions(['ROLE:ADD'])"
+        v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.CREATE])"
         prepend-icon="mdi-plus"
         color="primary"
         rounded="xl"
@@ -11,7 +11,7 @@
         <span class="text-none">Ajouter</span>
       </v-btn>
       <v-btn
-        v-if="userHasOneOfPermissions(['ROLE:EDIT'])"
+        v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.UPDATE])"
         :disabled="!selectedRole"
         prepend-icon="mdi-pencil"
         color="white"
@@ -22,7 +22,7 @@
         <span class="text-none">Modifier</span>
       </v-btn>
       <v-btn
-        v-if="userHasOneOfPermissions(['ROLE:DELETE'])"
+        v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.DELETE])"
         :disabled="!selectedRole || deletionInLoading"
         :loading="deletionInLoading"
         prepend-icon="mdi-delete"
@@ -34,7 +34,7 @@
         <span class="text-none">Supprimer</span>
       </v-btn>
       <v-btn
-        v-if="userHasOneOfPermissions(['ROLE:EDIT'])"
+        v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.UPDATE_PERMISSIONS])"
         :disabled="!selectedRole"
         prepend-icon="mdi-shield-account"
         color="white"
@@ -126,22 +126,28 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { useRoleStore } from '@/stores/role'
-import { shouldHaveOneOfPermissions, userHasOneOfPermissions } from '@/utilities/auth.util'
+import { PERMISSIONS, shouldHaveOneOfPermissions, userHasOneOfPermissions } from '@/utilities/auth.util'
 import { RoleI } from '~/types/role'
+import { UserI } from '~/types/user'
 
 definePageMeta({
   layout: 'admin',
-  middleware: [(_, __, next) => shouldHaveOneOfPermissions({ next, permissions: ['ROLE:READ'] })]
+  middleware: [(_, __, next) => shouldHaveOneOfPermissions({
+    next, permissions: [PERMISSIONS.ROLE.READ]
+  })]
 })
-
-const roleStore = useRoleStore()
-const { loading: roleLoading, roles } = storeToRefs(roleStore)
-const { fetchRoles, deleteRole } = roleStore
 
 useAdminBreadcrumb('mdi-security', [{
   title: 'Roles',
   href: '/admin/roles'
 }])
+
+const { data: currentUserData } = useAuth()
+const currentUser = currentUserData.value as UserI
+
+const roleStore = useRoleStore()
+const { loading: roleLoading, roles } = storeToRefs(roleStore)
+const { fetchRoles, deleteRole } = roleStore
 
 const expanded = ref([])
 const itemsPerPage = ref(10)

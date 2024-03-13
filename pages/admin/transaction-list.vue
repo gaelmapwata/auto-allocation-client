@@ -12,7 +12,11 @@
     <v-card :loading="transactionsLoading" class="mt-2" rounded="xl" elevation="0">
       <v-card-text>
         <div class="d-flex justify-end">
-          <a :href="csvExportLink" target="_blank">
+          <a
+            v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.EXPORT])"
+            :href="csvExportLink"
+            target="_blank"
+          >
             <v-btn
               class="text-none"
               color="primary"
@@ -43,7 +47,7 @@
             {{ (itemsPerPage * (page - 1)) + index + 1 }}
           </template>
           <template #[`item.createdAt`]="{ item }">
-            {{ formatters.formatDateFns(item.createdAt) }}
+            {{ item.createdAt ? formatters.formatDateFns(item.createdAt) : '-' }}
           </template>
           <template #[`item.lastName`]="{ item }">
             {{ item.lastName }} {{ item.firstName }}
@@ -60,7 +64,7 @@
               Succès
             </v-chip>
 
-            <v-tooltip v-else :text="item.error">
+            <v-tooltip v-else-if="item.error" :text="item.error">
               <template #activator="{ props }">
                 <v-chip v-bind="props" variant="flat" color="red">
                   <v-icon start icon="mdi-alert-circle" />
@@ -80,15 +84,23 @@ import { formatters } from '@/utilities/formatter.util'
 import { TransactionI } from '@/types/transaction'
 import { useTransactionStore } from '@/stores/transaction'
 import { useSnackbarStore } from '@/stores/snackbar'
+import { PERMISSIONS, shouldHaveOneOfPermissions, userHasOneOfPermissions } from '~/utilities/auth.util'
+import { UserI } from '~/types/user'
 
 definePageMeta({
-  layout: 'admin'
+  layout: 'admin',
+  middleware: [(_, __, next) => shouldHaveOneOfPermissions({
+    next, permissions: [PERMISSIONS.TRANSACTION.READ, PERMISSIONS.TRANSACTION.READ_OWN_TRANSACTIONS]
+  })]
 })
 
 useAdminBreadcrumb('mdi-security', [{
   title: 'Transactions',
   href: '/admin/transaction-list'
 }])
+
+const { data: currentUserData } = useAuth()
+const currentUser = currentUserData.value as UserI
 
 const config = useRuntimeConfig()
 const transactionStore = useTransactionStore()
@@ -100,7 +112,7 @@ const itemsPerPage = ref(10)
 const page = ref(1)
 const transactions = ref<TransactionI[]>([])
 const transactionsLoading = ref(false)
-const filter = ref({
+const filter = ref<Record<string, string | boolean | number>>({
   success: true
 })
 const totalItems = ref(0)
@@ -110,7 +122,11 @@ const csvExportLink = computed(() => {
   // eslint-disable-next-line no-restricted-syntax
   for (const key in filter.value) {
     if (Object.hasOwnProperty.call(filter.value, key)) {
-      params.append(key, String(filter.value[key]))
+      if (typeof filter.value[key] === 'boolean') {
+        params.append(key, filter.value[key] ? '1' : '0')
+      } else {
+        params.append(key, String(filter.value[key]))
+      }
     }
   }
   return `${config.public.baseURL}/transactions/download-csv?${params.toString()}`
