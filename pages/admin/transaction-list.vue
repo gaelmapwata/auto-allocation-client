@@ -14,8 +14,8 @@
         <div class="d-flex justify-end">
           <a
             v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.EXPORT])"
-            :href="csvExportLink"
             target="_blank"
+            @click="handleExportTransactions()"
           >
             <v-btn
               class="text-none"
@@ -105,7 +105,7 @@ const currentUser = currentUserData.value as UserI
 const config = useRuntimeConfig()
 const transactionStore = useTransactionStore()
 const snackbarStore = useSnackbarStore()
-const { fetchTransactions } = transactionStore
+const { fetchTransactions, exportTransactions } = transactionStore
 const { showSuccessSnackbar } = snackbarStore
 
 const itemsPerPage = ref(10)
@@ -116,21 +116,6 @@ const filter = ref<Record<string, string | boolean | number>>({
   success: true
 })
 const totalItems = ref(0)
-
-const csvExportLink = computed(() => {
-  const params = new URLSearchParams()
-  // eslint-disable-next-line no-restricted-syntax
-  for (const key in filter.value) {
-    if (Object.hasOwnProperty.call(filter.value, key)) {
-      if (typeof filter.value[key] === 'boolean') {
-        params.append(key, filter.value[key] ? '1' : '0')
-      } else {
-        params.append(key, String(filter.value[key]))
-      }
-    }
-  }
-  return `${config.public.baseURL}/transactions/download-csv?${params.toString()}`
-})
 
 const headers = [
   {
@@ -197,6 +182,10 @@ async function loadTransactions () {
 
 function handleExportCsv () {
   showSuccessSnackbar('Le téléchargement du ficher a été lancé')
+}
+
+function handleExportTransactions () {
+  exportTransactions(filter.value)
 }
 
 loadTransactions()

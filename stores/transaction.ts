@@ -68,6 +68,21 @@ export const useTransactionStore = defineStore('transaction', {
           }
         })
       })
+    },
+    exportTransactions (filter?: {
+      [key: string]: string | number | boolean
+    }): void {
+      useFetchApi('/transactions/download-csv', {
+        method: 'get',
+        params: {
+          ...(filter || {})
+        }
+      }).then(({ data }) => {
+        if (data.value) {
+          const fileUrl = URL.createObjectURL(data.value)
+          window.open(fileUrl, '_blank')
+        }
+      })
     }
   }
 })
