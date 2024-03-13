@@ -7,7 +7,7 @@
       item-value="id"
     >
       <template #[`item.createdAt`]="{ item }">
-        {{ formatters.formatDateFns(item.createdAt) }}
+        {{ item.createdAt ? formatters.formatDateFns(item.createdAt) : '-' }}
       </template>
       <template #[`item.lastName`]="{ item }">
         {{ item.lastName }} {{ item.firstName }}
