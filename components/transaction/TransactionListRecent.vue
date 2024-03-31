@@ -19,12 +19,17 @@
         {{ formatters.formatPrice(item.amount) }}
       </template>
       <template #[`item.success`]="{ item }">
+        <v-chip v-if="!item.checkerId" append>
+          <v-icon start icon="mdi-clock-outline" />
+          En attente de validation
+        </v-chip>
+
         <v-chip v-if="item.success" variant="flat" color="green" append>
           <v-icon start icon="mdi-check" />
           Succès
         </v-chip>
 
-        <v-tooltip v-else :text="item.error">
+        <v-tooltip v-else-if="item.error" :text="item.error">
           <template #activator="{ props }">
             <v-chip v-bind="props" variant="flat" color="red">
               <v-icon start icon="mdi-alert-circle" />

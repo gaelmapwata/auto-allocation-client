@@ -129,6 +129,15 @@ const groupedMenuItems: Array<{
         permissions: [PERMISSIONS.TRANSACTION.CREATE]
       },
       {
+        text: 'Transactions à valider',
+        icon: 'mdi-bank',
+        to: '/admin/transactions-to-validate',
+        permissions: [
+          PERMISSIONS.TRANSACTION.READ,
+          PERMISSIONS.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE
+        ]
+      },
+      {
         text: 'Transactions',
         icon: 'mdi-bank',
         to: '/admin/transaction-list',

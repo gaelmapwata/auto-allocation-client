@@ -40,7 +40,7 @@ import { Value } from 'sass';
         <CommonDateRangePicker v-model="filter.date" />
       </v-col>
 
-      <v-col cols="12" sm="6" md="4" class="d-flex align-center">
+      <v-col v-if="showSuccessFilter" cols="12" sm="6" md="4" class="d-flex align-center">
         <v-switch
           v-model="filter.success"
           label="Uniquement transactions réussies"
@@ -81,7 +81,8 @@ import { Value } from 'sass';
 <script lang="ts" setup>
 
 const props = defineProps({
-  modelValue: { type: Object, required: true }
+  modelValue: { type: Object, required: true },
+  showSuccessFilter: { type: Boolean, default: true }
 })
 
 const emit = defineEmits(['update:modelValue', 'filter'])

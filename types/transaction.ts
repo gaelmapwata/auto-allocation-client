@@ -1,6 +1,7 @@
 import { UserI } from './user'
 
 export interface TransactionI {
+  id: number;
   msisdn: string;
   lastName: string;
   firstName: string;
@@ -14,4 +15,8 @@ export interface TransactionI {
   error: string;
   user: UserI;
   createdAt?: string;
+  checkerId: number;
+  checker?: UserI;
+  drAcctNum: string;
+  crAcctNum: string;
 }

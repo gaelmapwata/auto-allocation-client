@@ -4,6 +4,7 @@
       <v-card-text>
         <TransactionFiltre
           v-model="filter"
+          :show-success-filter="false"
           @filter="handleFilter()"
         />
       </v-card-text>
@@ -11,27 +12,6 @@
 
     <v-card :loading="transactionsLoading" class="mt-2" rounded="xl" elevation="0">
       <v-card-text>
-        <div class="d-flex justify-end">
-          <a
-            v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.EXPORT])"
-            target="_blank"
-            @click="handleExportTransactions()"
-          >
-            <v-btn
-              class="text-none"
-              color="primary"
-              rounded="xl"
-              elevation="0"
-              append-icon="mdi-file-excel"
-              @click="handleExportCsv()"
-            >
-              <span class="text-none">Exporter</span>
-            </v-btn>
-          </a>
-        </div>
-
-        <v-divider class="mt-4" />
-
         <v-data-table-server
           v-model:items-per-page="itemsPerPage"
           v-model:page="page"
@@ -55,35 +35,34 @@
           <template #[`item.user`]="{ item }">
             {{ item.user.email }}
           </template>
-          <template #[`item.checker`]="{ item }">
-            {{ item.checker?.email || '-' }}
-          </template>
           <template #[`item.amount`]="{ item }">
             {{ formatters.formatPrice(item.amount) }} {{ item.currency }}
           </template>
-          <template #[`item.success`]="{ item }">
-            <v-chip v-if="!item.checkerId" append>
-              <v-icon start icon="mdi-clock-outline" />
-              En attente de validation
-            </v-chip>
-
-            <v-chip v-if="item.success" variant="flat" color="green" append>
-              <v-icon start icon="mdi-check" />
-              Succès
-            </v-chip>
-
-            <v-tooltip v-else-if="item.error" :text="item.error">
-              <template #activator="{ props }">
-                <v-chip v-bind="props" variant="flat" color="red">
-                  <v-icon start icon="mdi-alert-circle" />
-                  Échec
-                </v-chip>
-              </template>
-            </v-tooltip>
+          <template #[`item.actions`]="{ item }">
+            <v-btn
+              v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.VALIDATE])"
+              :disabled="confirmTransactionLoading"
+              elevation="0"
+              width="150"
+              rounded="xl"
+              append-icon="mdi-check"
+              color="green"
+              @click="showConfirmTransactionValidationDialog(item)"
+            >
+              <span class="text-none">Valider</span>
+            </v-btn>
           </template>
         </v-data-table-server>
       </v-card-text>
     </v-card>
+
+    <CommonConfirmDialog
+      v-model="confirmTransactionDialogVisible"
+      :text="textConfirmDeletion"
+      action-icon="mdi-check"
+      action-text="Confirmer"
+      @confirm="onConfirmTransactionValidation"
+    />
   </div>
 </template>
 
@@ -91,38 +70,42 @@
 import { formatters } from '@/utilities/formatter.util'
 import { TransactionI } from '@/types/transaction'
 import { useTransactionStore } from '@/stores/transaction'
-import { useSnackbarStore } from '@/stores/snackbar'
 import { PERMISSIONS, shouldHaveOneOfPermissions, userHasOneOfPermissions } from '~/utilities/auth.util'
 import { UserI } from '~/types/user'
 
 definePageMeta({
   layout: 'admin',
   middleware: [(_, __, next) => shouldHaveOneOfPermissions({
-    next, permissions: [PERMISSIONS.TRANSACTION.READ, PERMISSIONS.TRANSACTION.READ_OWN_TRANSACTIONS]
+    next, permissions: [PERMISSIONS.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE]
   })]
 })
 
 useAdminBreadcrumb('mdi-security', [{
-  title: 'Transactions',
-  href: '/admin/transaction-list'
+  title: 'Transactions à valider',
+  href: '/admin/transaction-to-validate'
 }])
 
 const { data: currentUserData } = useAuth()
 const currentUser = currentUserData.value as UserI
 
 const transactionStore = useTransactionStore()
-const snackbarStore = useSnackbarStore()
-const { fetchTransactions, exportTransactions } = transactionStore
-const { showSuccessSnackbar } = snackbarStore
+const { fetchTransactionsToValidate, validateTransaction } = transactionStore
 
 const itemsPerPage = ref(10)
 const page = ref(1)
 const transactions = ref<TransactionI[]>([])
 const transactionsLoading = ref(false)
-const filter = ref<Record<string, string | boolean | number>>({
-  success: true
-})
+const filter = ref<Record<string, string | boolean | number>>({})
 const totalItems = ref(0)
+const confirmTransactionDialogVisible = ref(false)
+const confirmTransactionLoading = ref(false)
+const transactionToValidate = ref<TransactionI>()
+
+const textConfirmDeletion = computed(() => (transactionToValidate.value
+  ? `Voulez-vous vraiment confirmer la transaction de
+    ${parseFloat((transactionToValidate.value?.amount as number).toString())} ${transactionToValidate.value?.currency}
+    du compte ${transactionToValidate.value?.drAcctNum} vers le compte ${transactionToValidate.value?.crAcctNum}`
+  : 'Aucune transaction selectionnée'))
 
 const headers = [
   {
@@ -152,8 +135,13 @@ const headers = [
     sortable: false
   },
   {
-    title: 'Validé par',
-    key: 'checker',
+    title: 'Compte à débiter',
+    key: 'drAcctNum',
+    sortable: false
+  },
+  {
+    title: 'Compte à créditer',
+    key: 'crAcctNum',
     sortable: false
   },
   {
@@ -162,8 +150,8 @@ const headers = [
     sortable: false
   },
   {
-    title: 'Statut',
-    key: 'success',
+    title: 'Actions',
+    key: 'actions',
     sortable: false
   }
 ]
@@ -173,9 +161,23 @@ function handleFilter () {
   loadTransactions()
 }
 
+function showConfirmTransactionValidationDialog (transaction: TransactionI) {
+  transactionToValidate.value = transaction
+  confirmTransactionDialogVisible.value = true
+}
+
+function onConfirmTransactionValidation () {
+  confirmTransactionLoading.value = true
+  validateTransaction(transactionToValidate.value?.id as number)
+    .finally(() => {
+      confirmTransactionLoading.value = false
+      loadTransactions()
+    })
+}
+
 async function loadTransactions () {
   transactionsLoading.value = true
-  const { data, total } = await fetchTransactions(
+  const { data, total } = await fetchTransactionsToValidate(
     {
       page: page.value,
       limit: itemsPerPage.value,
@@ -185,14 +187,6 @@ async function loadTransactions () {
   transactions.value = data
   totalItems.value = total
   transactionsLoading.value = false
-}
-
-function handleExportCsv () {
-  showSuccessSnackbar('Le téléchargement du ficher a été lancé')
-}
-
-function handleExportTransactions () {
-  exportTransactions(filter.value)
 }
 
 loadTransactions()
