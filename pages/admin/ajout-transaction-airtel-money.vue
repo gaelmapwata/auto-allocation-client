@@ -28,18 +28,35 @@
               class="mt-10"
               @submit="(handleMsisdnDefined as any)"
             >
-              <div class="mx-auto my-5" style="max-width: 400px;">
-                <Field v-slot="{ field, errorMessage }" name="msisdn">
-                  <v-text-field
-                    v-bind="field"
-                    :error-messages="errorMessage"
-                    variant="solo-filled"
-                    label="Insérer le msisdn de l'agent"
-                    placeholder="MSISDN"
-                    rounded
-                    flat
-                  />
-                </Field>
+              <div class="mx-auto" style="max-width: 400px;">
+                <div class="my-5">
+                  <Field v-slot="{ field, errorMessage }" name="msisdn">
+                    <v-text-field
+                      v-bind="field"
+                      :error-messages="errorMessage"
+                      variant="solo-filled"
+                      label="Insérer le msisdn de l'agent"
+                      placeholder="MSISDN"
+                      rounded
+                      flat
+                    />
+                  </Field>
+                </div>
+
+                <div class="my-5">
+                  <Field v-slot="{ field, errorMessage }" name="currency">
+                    <v-select
+                      v-model="currencyKYC"
+                      v-bind="field"
+                      :items="['USD', 'CDF']"
+                      :error-messages="errorMessage"
+                      variant="solo-filled"
+                      label="Devise"
+                      rounded
+                      flat
+                    />
+                  </Field>
+                </div>
               </div>
 
               <div class="d-flex justify-end mb-4">
@@ -90,6 +107,7 @@
                 <div class="my-5">
                   <Field v-slot="{ field, errorMessage }" name="currency">
                     <v-select
+                      v-model="currencyTransaction"
                       v-bind="field"
                       :items="['USD', 'CDF']"
                       :error-messages="errorMessage"
@@ -208,7 +226,8 @@ const canManuallySetAccountNumber = useUserHasOneOfPermissions([
 ])
 
 const stepOneSchema = object({
-  msisdn: string().required()
+  msisdn: string().required(),
+  currency: string().required()
 })
 const stepTransactionSchema = {
   amount: number().required(),
@@ -233,6 +252,8 @@ const fetchKYCLoading = ref(false)
 const confirmDialogVisible = ref(false)
 const kycDetails = ref<CheckKYCResponseI>()
 const textConfirmDeletion = ref('')
+const currencyKYC = ref(null)
+const currencyTransaction = ref(null)
 
 const isKYCGradeAuthorized = computed(() => kycDetails.value &&
   AUTHORIZED_KYC_GRADE.some(grade => grade.toLowerCase() === kycDetails.value?.grade.toLowerCase()))
@@ -245,9 +266,9 @@ function defineStep (stepName: string) {
   step.value = stepName
 }
 
-function handleMsisdnDefined (values: { msisdn: string }) {
+function handleMsisdnDefined (values: { msisdn: string, currency: string }) {
   fetchKYCLoading.value = true
-  checkKYCByMsisdn(values.msisdn)
+  checkKYCByMsisdn(values.msisdn, values.currency)
     .then((value) => {
       kycDetails.value = value
       defineStep('saveTransaction')
@@ -284,6 +305,8 @@ function onConfirmTransaction () {
       defineStep('msisdn')
       msisdnFormRef.value?.resetForm()
       transactionFormRef.value?.resetForm()
+      currencyKYC.value = null
+      currencyTransaction.value = null
       saveLoading.value = false
     })
     .catch(() => { saveLoading.value = false })
