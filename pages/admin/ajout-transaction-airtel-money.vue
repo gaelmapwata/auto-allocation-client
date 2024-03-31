@@ -122,6 +122,13 @@
                     Ce numéro de telephone a été bannie
                   </span>
                 </p>
+
+                <p v-if="!isKYCGradeAuthorized" class="text-center mb-4">
+                  <v-icon class="mr-2" icon="mdi-alert" />
+                  <span class="text-red-500">
+                    Grade non authorisé
+                  </span>
+                </p>
               </div>
 
               <div class="d-flex justify-space-between mb-4">
@@ -140,7 +147,7 @@
                 <div>
                   <v-btn
                     :loading="saveLoading"
-                    :disabled="saveLoading || kycDetails?.is_barred"
+                    :disabled="saveLoading || !isValidKYC"
                     color="primary"
                     type="submit"
                     rounded="xl"
@@ -170,9 +177,11 @@
 import { number, object, string } from 'yup'
 import { useAirtelMoneyStore } from '@/stores/airtel-money'
 import { useTransactionStore } from '@/stores/transaction'
+import { useSnackbarStore } from '@/stores/snackbar'
 import { CheckKYCResponseI } from '~/types/airtel-money'
 import { Form } from 'vee-validate'
 import { PERMISSIONS, shouldHaveOneOfPermissions } from '~/utilities/auth.util'
+import { AUTHORIZED_KYC_GRADE } from '~/utilities/variables.util'
 
 definePageMeta({
   layout: 'admin',
@@ -188,7 +197,9 @@ useAdminBreadcrumb('mdi-bank-plus', [{
 
 const airtelMoneyStore = useAirtelMoneyStore()
 const transactionStore = useTransactionStore()
+const snackbarStore = useSnackbarStore()
 
+const { showErrorSnackbar } = snackbarStore
 const { checkKYCByMsisdn } = airtelMoneyStore
 const { storeTransaction } = transactionStore
 
@@ -223,6 +234,13 @@ const confirmDialogVisible = ref(false)
 const kycDetails = ref<CheckKYCResponseI>()
 const textConfirmDeletion = ref('')
 
+const isKYCGradeAuthorized = computed(() => kycDetails.value &&
+  AUTHORIZED_KYC_GRADE.some(grade => grade.toLowerCase() === kycDetails.value?.grade.toLowerCase()))
+
+const isValidKYC = computed(() => kycDetails.value &&
+  !kycDetails.value.is_barred &&
+  isKYCGradeAuthorized.value)
+
 function defineStep (stepName: string) {
   step.value = stepName
 }
@@ -238,16 +256,20 @@ function handleMsisdnDefined (values: { msisdn: string }) {
 }
 
 function saveTransaction () {
-  const { amount, currency } = transactionFormRef.value?.getValues() as {
+  if (!isValidKYC.value) {
+    showErrorSnackbar('Ce msisdn n\'est pas autorisé')
+  } else {
+    const { amount, currency } = transactionFormRef.value?.getValues() as {
       amount: number, currency: string
     }
-  const msisdn = msisdnFormRef.value?.getValues().msisdn
+    const msisdn = msisdnFormRef.value?.getValues().msisdn
 
-  textConfirmDeletion.value = `Confirmer vous le virement
-      de ${amount} ${currency}
-      à ${msisdn} (${kycDetails.value?.first_name} ${kycDetails.value?.last_name})`
+    textConfirmDeletion.value = `Confirmer vous le virement
+        de ${amount} ${currency}
+        à ${msisdn} (${kycDetails.value?.first_name} ${kycDetails.value?.last_name})`
 
-  confirmDialogVisible.value = true
+    confirmDialogVisible.value = true
+  }
 }
 
 function onConfirmTransaction () {
