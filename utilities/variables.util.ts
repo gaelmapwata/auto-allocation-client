@@ -11,3 +11,9 @@ export const AUTHORIZED_KYC_GRADE = [
   'GoldEnter4',
   'GoldEnter5'
 ]
+
+// eslint-disable-next-line no-shadow
+export enum CURRENCIES {
+  USD = 'USD',
+  CDF = 'CDF'
+}

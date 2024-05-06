@@ -41,7 +41,7 @@
           <template #[`item.actions`]="{ item }">
             <v-btn
               v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.VALIDATE])"
-              :disabled="confirmTransactionLoading"
+              :disabled="confirmTransactionLoading || !currentUserCanValidateTransaction(item)"
               elevation="0"
               width="150"
               rounded="xl"
@@ -72,6 +72,7 @@ import { TransactionI } from '@/types/transaction'
 import { useTransactionStore } from '@/stores/transaction'
 import { PERMISSIONS, shouldHaveOneOfPermissions, userHasOneOfPermissions } from '~/utilities/auth.util'
 import { UserI } from '~/types/user'
+import { CURRENCIES } from '~/utilities/variables.util'
 
 definePageMeta({
   layout: 'admin',
@@ -173,6 +174,16 @@ function onConfirmTransactionValidation () {
       confirmTransactionLoading.value = false
       loadTransactions()
     })
+}
+
+function currentUserCanValidateTransaction (transaction: TransactionI) {
+  if (transaction.currency === CURRENCIES.CDF && currentUser.validateMaxAmountCDF) {
+    return transaction.amount <= currentUser.validateMaxAmountCDF
+  }
+  if (transaction.currency === CURRENCIES.USD && currentUser.validateMaxAmountUSD) {
+    return transaction.amount <= currentUser.validateMaxAmountUSD
+  }
+  return true
 }
 
 async function loadTransactions () {
