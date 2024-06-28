@@ -123,13 +123,13 @@ const groupedMenuItems: Array<{
         permissions: [PERMISSIONS.TRANSACTION.READ, PERMISSIONS.TRANSACTION.READ_OWN_TRANSACTIONS]
       },
       {
-        text: 'Transaction Airtel Money',
+        text: 'Insertion',
         icon: 'mdi-bank-plus',
         to: '/admin/ajout-transaction-airtel-money',
         permissions: [PERMISSIONS.TRANSACTION.CREATE]
       },
       {
-        text: 'Transactions à valider',
+        text: 'Validation',
         icon: 'mdi-bank',
         to: '/admin/transactions-to-validate',
         permissions: [
