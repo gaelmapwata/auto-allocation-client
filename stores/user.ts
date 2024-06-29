@@ -69,6 +69,36 @@ export const useUserStore = defineStore('user', {
           }
         })
       })
+    },
+    lockUser (userId: number) {
+      return new Promise((resolve) => {
+        useFetchApi(`/users/${userId}/lock`, {
+          method: 'put'
+        }).then(({ status, data }) => {
+          if (status.value === 'success') {
+            const snackbarStore = useSnackbarStore()
+            const { showSuccessSnackbar } = snackbarStore
+            showSuccessSnackbar('Utilisateur bloqué avec succès')
+
+            resolve(data.value)
+          }
+        })
+      })
+    },
+    unlockUser (userId: number) {
+      return new Promise((resolve) => {
+        useFetchApi(`/users/${userId}/unlock`, {
+          method: 'put'
+        }).then(({ status, data }) => {
+          if (status.value === 'success') {
+            const snackbarStore = useSnackbarStore()
+            const { showSuccessSnackbar } = snackbarStore
+            showSuccessSnackbar('Utilisateur débloqué avec succès')
+
+            resolve(data.value)
+          }
+        })
+      })
     }
   }
 })

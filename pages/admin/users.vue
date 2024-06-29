@@ -62,6 +62,20 @@
               </v-chip>
             </v-chip-group>
           </template>
+          <template #[`item.lock`]="{ item }">
+            <v-switch
+              :model-value="item.locked"
+              :loading="locksInLoading[item.id]"
+              :disabled="usersLoading || locksInLoading[item.id] ||
+                (item.locked
+                  ? !userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.UNLOCK])
+                  : !userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.LOCK])
+                )
+              "
+              color="primary"
+              @update:model-value="onToggleLockState($event, item)"
+            />
+          </template>
         </v-data-table-server>
       </template>
     </v-card>
@@ -102,7 +116,7 @@ const { data: currentUserData } = useAuth()
 const currentUser = currentUserData.value as UserI
 
 const userStore = useUserStore()
-const { fetchUsersWithPagination, deleteUser } = userStore
+const { fetchUsersWithPagination, deleteUser, lockUser, unlockUser } = userStore
 
 const itemsPerPage = ref(10)
 const page = ref(1)
@@ -113,6 +127,7 @@ const userFormDialogVisible = ref(false)
 const userFormDialogAction = ref<string | undefined>(undefined)
 const confirmDialogVisible = ref(false)
 const deletionInLoading = ref(false)
+const locksInLoading = ref<boolean[]>([])
 const usersLoading = ref(false)
 
 const textConfirmDeletion = computed(
@@ -145,6 +160,10 @@ const headers = [
   {
     title: 'Montant de validation maximum (USD)',
     key: 'validateMaxAmountUSD'
+  },
+  {
+    title: 'Bloquer',
+    key: 'lock'
   }
 ]
 
@@ -176,6 +195,25 @@ function refreshUsers () {
     page: page.value,
     itemsPerPage: itemsPerPage.value
   })
+}
+
+async function onToggleLockState (locked: unknown, user: UserI) {
+  locksInLoading.value[user.id] = true
+  try {
+    if (locked as boolean) {
+      await lockUser(user.id)
+    } else {
+      await unlockUser(user.id)
+    }
+    users.value = users.value.map((u) => {
+      if (u.id === user.id) {
+        return { ...u, locked: locked as boolean }
+      }
+      return u
+    })
+  } finally {
+    locksInLoading.value[user.id] = false
+  }
 }
 
 async function loadUsers (payload: { page: number, itemsPerPage: number }) {

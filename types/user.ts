@@ -5,5 +5,6 @@ export interface UserI {
   email: string;
   validateMaxAmountCDF: number;
   validateMaxAmountUSD: number;
+  locked: boolean;
   roles?: RoleI[];
 }
