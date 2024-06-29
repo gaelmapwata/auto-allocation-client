@@ -19,13 +19,14 @@
 </template>
 
 <script lang="ts" setup>
-import { object, string } from 'yup'
+import { number, object, string } from 'yup'
 import { Form } from 'vee-validate'
 import { useSnackbarStore } from '@/stores/snackbar'
 import { useRoleStore } from '@/stores/role'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { UserI } from '~/types/user'
+import { RoleI } from '~/types/role'
 
 const snackbarStore = useSnackbarStore()
 const roleStore = useRoleStore()
@@ -64,6 +65,8 @@ const initialValues = computed(() => {
 
 const fields = computed(() => [
   { name: 'email', placeholder: 'Veuillez entre l\' email', label: 'Email', type: 'text' },
+  { name: 'validateMaxAmountCDF', label: 'Montant de validation maximum (CDF)', type: 'number' },
+  { name: 'validateMaxAmountUSD', label: 'Montant de validation maximum (USD)', type: 'number' },
   {
     name: 'roles',
     placeholder: 'Veuillez sélectionner les roles',
@@ -78,7 +81,13 @@ const formSchema = object({
   email: string()
     .max(255)
     .required('Veuillez renseigner l\'e-mail')
-    .email('Veuillez renseigner un email valide')
+    .email('Veuillez renseigner un email valide'),
+  validateMaxAmountCDF: number()
+    .nullable()
+    .transform((value: unknown, originalValue: unknown) => (originalValue === '' ? null : value)),
+  validateMaxAmountUSD: number()
+    .nullable()
+    .transform((value: unknown, originalValue: unknown) => (originalValue === '' ? null : value))
 })
 
 async function onSubmit () {
@@ -86,11 +95,20 @@ async function onSubmit () {
     const { valid } = await form.value.validate()
     if (valid) {
       actionLoading.value = true
+      const userPayload = form.value.getValues()
+      if (userPayload.validateMaxAmountCDF === '') {
+        userPayload.validateMaxAmountCDF = null
+      }
+      if (userPayload.validateMaxAmountUSD === '') {
+        userPayload.validateMaxAmountUSD = null
+      }
+
       if (props.action === 'create') {
-        await storeUser(form.value.getValues())
+        await storeUser(userPayload)
         emit('created')
       } else if (props.action === 'update') {
-        await updateUser(form.value.getValues())
+        userPayload.roles = userPayload.roles.map((role: number | RoleI) => (typeof role === 'object' ? role.id : role))
+        await updateUser(userPayload)
         emit('updated')
       }
       actionLoading.value = false

@@ -137,6 +137,14 @@ const headers = [
   {
     title: 'Roles',
     key: 'roles'
+  },
+  {
+    title: 'Montant de validation maximum (CDF)',
+    key: 'validateMaxAmountCDF'
+  },
+  {
+    title: 'Montant de validation maximum (USD)',
+    key: 'validateMaxAmountUSD'
   }
 ]
 
