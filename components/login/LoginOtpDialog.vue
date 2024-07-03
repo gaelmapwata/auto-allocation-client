@@ -8,15 +8,15 @@
     <v-card>
       <v-toolbar
         color="primary"
-        title="Confirmer votre OTP"
+        title="Confirm your OTP"
       />
       <v-card-text class="pa-6">
         <div>
-          Un email contenant un code à <strong class="text-primary">6 chiffres</strong>,
-          d'une validité de <strong class="text-primary">5 minutes</strong>,
-          vous a été transmis enfin de confirmer votre connexion,
+          An email containing a code to <strong class="text-primary">6 digits</strong>,
+          with a validity of <strong class="text-primary">5 minutes</strong>,
+          has been sent to you to confirm your connection,
 
-          Veuillez la saisir ici s'il vous plait.
+          Please enter it here.
         </div>
 
         <div class="mt-4">
@@ -36,7 +36,7 @@
           class="px-5"
           @click="onCancel()"
         >
-          <span class="text-none" style="letter-spacing: 0;">Annuler</span>
+          <span class="text-none" style="letter-spacing: 0;">Cancel</span>
         </v-btn>
         <v-btn
           :loading="loading"
@@ -47,7 +47,7 @@
           rounded
           @click="onCheckOTP()"
         >
-          <span class="text-none" style="letter-spacing: 0;">Connexion</span>
+          <span class="text-none" style="letter-spacing: 0;">Login</span>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -73,9 +73,9 @@ const otp = ref<string>('')
 const { showErrorSnackbar, showSuccessSnackbar } = snackbarStore
 
 const { value: otpFieldValue, meta: otpFieldMeta } = useField('', string()
-  .length(6, 'Veuillez renseigner un code à 6 chiffres')
-  .matches(/^[0-9]+$/, 'L\'Otp ne peut contenir que des chiffres')
-  .required('Veuillez renseigner le OTP'))
+  .length(6, 'Please enter a 6-digit code')
+  .matches(/^[0-9]+$/, 'Otp can only contain numbers')
+  .required('Please enter the OTP'))
 
 const dialog = computed({
   get () {
@@ -92,12 +92,12 @@ function onCheckOTP () {
     otp: otpFieldValue.value
   }, { callbackUrl: '/admin' })
     .then(() => {
-      showSuccessSnackbar('Connexion effectuée avec succès')
+      showSuccessSnackbar('Connection successfully completed')
     })
     .catch((error) => {
       if (error.response && error.response.status === 401) {
         // eslint-disable-next-line no-underscore-dangle
-        showErrorSnackbar(error.response._data?.msg || 'Otp incorrects')
+        showErrorSnackbar(error.response._data?.msg || 'Incorrect Otp')
       }
     })
 }

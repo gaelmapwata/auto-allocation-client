@@ -2,7 +2,7 @@
   <div class="d-flex flex-wrap">
     <v-card min-width="140px" class="mr-4 mb-4">
       <v-card-text class="text-center">
-        <span>Aujourd'hui</span>
+        <span>Today</span>
         <p class="text-h3">
           {{ stats.today }}
         </p>
@@ -11,7 +11,7 @@
 
     <v-card min-width="140px" class="mr-4 mb-4">
       <v-card-text class="text-center">
-        <span>Hier</span>
+        <span>Yesterday</span>
         <p class="text-h3">
           {{ stats.yesterday }}
         </p>
@@ -20,7 +20,7 @@
 
     <v-card min-width="140px" class="mr-4 mb-4">
       <v-card-text class="text-center">
-        <span>Cette semaine</span>
+        <span>This week</span>
         <p class="text-h3">
           {{ stats.currentWeek }}
         </p>
@@ -29,7 +29,7 @@
 
     <v-card min-width="140px" class="mb-4">
       <v-card-text class="text-center">
-        <span>Ce Mois</span>
+        <span>This Month</span>
         <p class="text-h3">
           {{ stats.currentMonth }}
         </p>

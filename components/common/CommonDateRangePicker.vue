@@ -7,7 +7,7 @@
     :month-change-on-scroll="false"
     :format-locale="fr"
     format="dd/MM/yyyy"
-    placeholder="Sélectionner une plage de date"
+    placeholder="Select a date range"
     class="date-range-picker"
     model-type="yyyy/MM/dd"
     range

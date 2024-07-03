@@ -8,7 +8,7 @@
         rounded="xl"
         @click="onAddRole()"
       >
-        <span class="text-none">Ajouter</span>
+        <span class="text-none">Add</span>
       </v-btn>
       <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.UPDATE])"
@@ -19,7 +19,7 @@
         class="ml-2"
         @click="onEditRole()"
       >
-        <span class="text-none">Modifier</span>
+        <span class="text-none">Update</span>
       </v-btn>
       <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.DELETE])"
@@ -31,7 +31,7 @@
         class="ml-2"
         @click="onDeleteRole()"
       >
-        <span class="text-none">Supprimer</span>
+        <span class="text-none">Delete</span>
       </v-btn>
       <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.UPDATE_PERMISSIONS])"
@@ -42,7 +42,7 @@
         class="ml-2"
         @click="onUpdatePermissions()"
       >
-        <span class="text-none">Mettre à jour les permissions</span>
+        <span class="text-none">Update permissions</span>
       </v-btn>
     </div>
 
@@ -71,11 +71,11 @@
             <tr>
               <td :colspan="columns.length" class="mb-3">
                 <p class="mt-3">
-                  Liste de permissions pour <strong>"{{ item.name }}"</strong>
+                  Permission list for <strong>"{{ item.name }}"</strong>
                 </p>
 
                 <div v-if="!item.ressources || !item.ressources.length" class="mt-2 mb-4">
-                  <v-chip>Aucune permission affectée</v-chip>
+                  <v-chip>No permits assigned</v-chip>
                 </div>
 
                 <template v-if="item.ressources">
@@ -160,7 +160,7 @@ const deletionInLoading = ref(false)
 const rolePermissionsDialogVisible = ref(false)
 
 const textConfirmDeletion = computed(
-  () => `Voulez-vous vraiment supprimer le role <strong>"${selectedRole.value?.name}"</strong> ?`
+  () => `Do you really want to delete the <strong>"${selectedRole.value?.name}"</strong> ?`
 )
 
 const selectedRole = computed<RoleI | null>(
@@ -182,7 +182,7 @@ const headers = [
     key: 'index'
   },
   {
-    title: 'Nom',
+    title: 'Name',
     key: 'name'
   }
 ]

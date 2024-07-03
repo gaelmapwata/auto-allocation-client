@@ -24,7 +24,7 @@ export const useTransactionStore = defineStore('transaction', {
           if (data.value) {
             const snackbarStore = useSnackbarStore()
             const { showSuccessSnackbar } = snackbarStore
-            showSuccessSnackbar('Transaction effectué avec succès')
+            showSuccessSnackbar('Transaction successfully completed')
 
             resolve(data.value)
           } else {
@@ -114,7 +114,7 @@ export const useTransactionStore = defineStore('transaction', {
           if (data.value) {
             const snackbarStore = useSnackbarStore()
             const { showSuccessSnackbar } = snackbarStore
-            showSuccessSnackbar('Transaction effectué avec succès')
+            showSuccessSnackbar('Transaction successfully completed')
 
             resolve(data.value)
           } else {

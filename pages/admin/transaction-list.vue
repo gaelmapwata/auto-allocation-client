@@ -25,7 +25,7 @@
               append-icon="mdi-file-excel"
               @click="handleExportCsv()"
             >
-              <span class="text-none">Exporter</span>
+              <span class="text-none">Export</span>
             </v-btn>
           </a>
         </div>
@@ -64,19 +64,19 @@
           <template #[`item.success`]="{ item }">
             <v-chip v-if="!item.checkerId" append>
               <v-icon start icon="mdi-clock-outline" />
-              En attente de validation
+              Pending validation
             </v-chip>
 
             <v-chip v-if="item.success" variant="flat" color="green" append>
               <v-icon start icon="mdi-check" />
-              Succès
+              Success
             </v-chip>
 
             <v-tooltip v-else-if="item.error" :text="item.error">
               <template #activator="{ props }">
                 <v-chip v-bind="props" variant="flat" color="red">
                   <v-icon start icon="mdi-alert-circle" />
-                  Échec
+                  Failure
                 </v-chip>
               </template>
             </v-tooltip>
@@ -147,22 +147,22 @@ const headers = [
     sortable: false
   },
   {
-    title: 'Effectué par',
+    title: 'Performed by',
     key: 'user',
     sortable: false
   },
   {
-    title: 'Validé par',
+    title: 'Validated by',
     key: 'checker',
     sortable: false
   },
   {
-    title: 'Montant',
+    title: 'Amount',
     key: 'amount',
     sortable: false
   },
   {
-    title: 'Statut',
+    title: 'Status',
     key: 'success',
     sortable: false
   }
@@ -188,7 +188,7 @@ async function loadTransactions () {
 }
 
 function handleExportCsv () {
-  showSuccessSnackbar('Le téléchargement du ficher a été lancé')
+  showSuccessSnackbar('The file has been downloaded')
 }
 
 function handleExportTransactions () {

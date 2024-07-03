@@ -2,11 +2,11 @@
   <v-table>
     <tbody>
       <tr>
-        <td>Prénom</td>
+        <td>First Name</td>
         <td>{{ kycDetails.first_name }}</td>
       </tr>
       <tr>
-        <td>Nom</td>
+        <td>Name</td>
         <td>{{ kycDetails.last_name }}</td>
       </tr>
       <tr>

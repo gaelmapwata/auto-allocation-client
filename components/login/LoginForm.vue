@@ -1,6 +1,6 @@
 <template>
   <div class="login-form-container">
-    <h1>UBA-RDC AUTO ALLOCATION</h1>
+    <h1>UBA AUTO ALLOCATION</h1>
     <h2 class="text-primary">
       AUTHENTIFICATION
     </h2>
@@ -9,7 +9,7 @@
 
     <Form class="mt-10" :validation-schema="loginSchema" @submit="(onSubmit as any)">
       <p class="mb-6">
-        Veuillez renseigner vos identifiants pour vous connectez
+        Please enter your login details to connect
       </p>
 
       <div class="mb-2">
@@ -18,7 +18,7 @@
             v-bind="field"
             v-model="email"
             :error-messages="errorMessage"
-            placeholder="Entrer votre E-mail"
+            placeholder="Enter your e-mail"
             prepend-inner-icon="mdi-email-outline"
             variant="solo-filled"
             rounded
@@ -34,7 +34,7 @@
             :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
             :type="passwordVisible ? 'text' : 'password'"
             :error-messages="errorMessage"
-            placeholder="Entrer votre mot de passe"
+            placeholder="Enter your password"
             prepend-inner-icon="mdi-lock-outline"
             variant="solo-filled"
             rounded
@@ -54,7 +54,7 @@
         block
         rounded
       >
-        <span class="text-none" style="letter-spacing: 0;">Se connecter</span>
+        <span class="text-none" style="letter-spacing: 0;">Login</span>
       </v-btn>
     </Form>
   </div>
@@ -84,9 +84,9 @@ const { showErrorSnackbar } = snackbarStore
 
 const loginSchema = object({
   email: string()
-    .email('Veuillez renseigner un email valide')
-    .required('Veuillez renseigner un email'),
-  password: string().required('Veuillez renseigner un mot de passe')
+    .email('Please enter a valid email address')
+    .required('Please enter an email address'),
+  password: string().required('Please enter a password')
 })
 
 function onSubmit (values: FormValueI) {
@@ -95,7 +95,7 @@ function onSubmit (values: FormValueI) {
       loading.value = false
       if (error.value) {
         if (error.value.statusCode === 401) {
-          showErrorSnackbar(error.value.data.msg || 'Identifiants incorrects')
+          showErrorSnackbar(error.value.data.msg || 'Incorrect login')
         }
       } else {
         showOtpForm.value = true

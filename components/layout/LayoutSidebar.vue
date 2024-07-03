@@ -13,7 +13,7 @@
                   <v-icon icon="mdi-account-circle" />
                 </v-avatar>
                 <div class="header-infos">
-                  <small> Connecté en tant que </small> <br>
+                  <small> Connected as </small> <br>
                   <v-tooltip :text="currentUser.email" location="bottom">
                     <template #activator="{ props }">
                       <span

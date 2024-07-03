@@ -2,14 +2,14 @@ import { Value } from 'sass';
 <template>
   <div>
     <p class="text-center mb-2">
-      ~Filtres~
+      ~Filter~
     </p>
 
     <v-row justify="center">
       <v-col cols="12" sm="6" md="4" class="pb-0">
         <v-text-field
           v-model="filter.msisdn"
-          label="Rechercher par MSISDN"
+          label="Search by MSISDN"
           placeholder="MSISDN"
           variant="solo-filled"
           density="compact"
@@ -24,7 +24,7 @@ import { Value } from 'sass';
         <v-select
           v-model="filter.currency"
           :items="['USD', 'CDF']"
-          label="Devises"
+          label="Currencies"
           variant="solo-filled"
           density="compact"
           hide-details
@@ -43,7 +43,7 @@ import { Value } from 'sass';
       <v-col v-if="showSuccessFilter" cols="12" sm="6" md="4" class="d-flex align-center">
         <v-switch
           v-model="filter.success"
-          label="Uniquement transactions réussies"
+          label="Only successful transactions"
           color="primary"
           hide-details
         />
@@ -71,7 +71,7 @@ import { Value } from 'sass';
           append-icon="mdi-refresh"
           @click="resetFilter()"
         >
-          <span class="text-none">Réinitialiser</span>
+          <span class="text-none">Reset</span>
         </v-btn>
       </v-col>
     </v-row>

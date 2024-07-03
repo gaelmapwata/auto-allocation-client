@@ -1,11 +1,11 @@
 <template>
   <CommonDialog
     v-model="dialog"
-    title="Affectation des permissions"
+    title="Assigning permissions"
     :submit="onSubmit"
     :action-loading="actionLoading"
     min-width="600"
-    action-text="Valider"
+    action-text="Confirm"
   >
     <div v-for="ressource in ressources" :key="ressource.id">
       <p class="text-capitalize">

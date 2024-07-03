@@ -13,7 +13,7 @@
         <v-divider />
 
         <v-stepper-item
-          title="Lancer le paiement"
+          title="Start payment"
           value="saveTransaction"
           icon="mdi-pencil"
         />
@@ -35,7 +35,7 @@
                       v-bind="field"
                       :error-messages="errorMessage"
                       variant="solo-filled"
-                      label="Insérer le msisdn de l'agent"
+                      label="Insert msisdn "
                       placeholder="MSISDN"
                       rounded
                       flat
@@ -51,7 +51,7 @@
                       :items="['USD', 'CDF']"
                       :error-messages="errorMessage"
                       variant="solo-filled"
-                      label="Devise"
+                      label="Currency"
                       rounded
                       flat
                     />
@@ -67,7 +67,7 @@
                   :disabled="fetchKYCLoading"
                   :loading="fetchKYCLoading"
                 >
-                  <span class="text-none mr-2">Suivant</span>
+                  <span class="text-none mr-2">Next</span>
                   <v-icon>mdi-arrow-right</v-icon>
                 </v-btn>
               </div>
@@ -96,7 +96,7 @@
                       :error-messages="errorMessage"
                       variant="solo-filled"
                       label="Insérer le montant de la transaction"
-                      placeholder="Montant"
+                      placeholder="Amount"
                       type="number"
                       rounded
                       flat
@@ -112,7 +112,7 @@
                       :items="['USD', 'CDF']"
                       :error-messages="errorMessage"
                       variant="solo-filled"
-                      label="Devise"
+                      label="Currency"
                       rounded
                       flat
                     />
@@ -125,8 +125,8 @@
                       v-bind="field"
                       :error-messages="errorMessage"
                       variant="solo-filled"
-                      label="Insérer le numéro de compte du client"
-                      placeholder="Numéro de compte"
+                      label="Insert customer account number"
+                      placeholder="Account number"
                       type="number"
                       rounded
                       flat
@@ -137,14 +137,14 @@
                 <p v-if="kycDetails?.is_barred" class="text-center mb-4">
                   <v-icon class="mr-2" icon="mdi-alert" />
                   <span class="text-red-500">
-                    Ce numéro de telephone a été bannie
+                    This phone number has been banned
                   </span>
                 </p>
 
                 <p v-if="!isKYCGradeAuthorized" class="text-center mb-4">
                   <v-icon class="mr-2" icon="mdi-alert" />
                   <span class="text-red-500">
-                    Grade non authorisé
+                    Grade not authorized
                   </span>
                 </p>
               </div>
@@ -159,7 +159,7 @@
                     @click="defineStep('msisdn')"
                   >
                     <v-icon>mdi-arrow-left</v-icon>
-                    <span class="text-none ml-2">Précédant</span>
+                    <span class="text-none ml-2">Previous</span>
                   </v-btn>
                 </div>
                 <div>
@@ -170,7 +170,7 @@
                     type="submit"
                     rounded="xl"
                   >
-                    <span class="text-none mr-2">Débuter le processus de paiement</span>
+                    <span class="text-none mr-2">Start the payment process</span>
                     <v-icon>mdi-arrow-top-right</v-icon>
                   </v-btn>
                 </div>
@@ -209,7 +209,7 @@ definePageMeta({
 })
 
 useAdminBreadcrumb('mdi-bank-plus', [{
-  title: 'Ajout transaction Airtel Money',
+  title: 'Add Airtel Money transaction',
   href: '/admin/ajout-transaction-airtel-money'
 }])
 
@@ -236,9 +236,9 @@ const stepTransactionSchema = {
     canManuallySetAccountNumber
       ? {
           accountNumber: string()
-            .required('Numéro de compte requis')
-            .matches(/^[0-9]*$/, 'Numéro de compte ne peut contenir que des chiffres')
-            .length(12, 'Numéro de compte doit avoir exactement 12 chiffres')
+            .required('Account number required')
+            .matches(/^[0-9]*$/, 'Account number can only contain digits')
+            .length(12, 'Account number must be exactly 12 digits long')
         }
       : {}
   )
@@ -278,16 +278,16 @@ function handleMsisdnDefined (values: { msisdn: string, currency: string }) {
 
 function saveTransaction () {
   if (!isValidKYC.value) {
-    showErrorSnackbar('Ce msisdn n\'est pas autorisé')
+    showErrorSnackbar('This msisdn is not authorized')
   } else {
     const { amount, currency } = transactionFormRef.value?.getValues() as {
       amount: number, currency: string
     }
     const msisdn = msisdnFormRef.value?.getValues().msisdn
 
-    textConfirmDeletion.value = `Confirmer vous le virement
-        de ${amount} ${currency}
-        à ${msisdn} (${kycDetails.value?.first_name} ${kycDetails.value?.last_name})`
+    textConfirmDeletion.value = `Confirm the transfer
+        of ${amount} ${currency}
+        to ${msisdn} (${kycDetails.value?.first_name} ${kycDetails.value?.last_name})`
 
     confirmDialogVisible.value = true
   }

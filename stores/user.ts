@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', {
           if (status.value === 'success') {
             const snackbarStore = useSnackbarStore()
             const { showSuccessSnackbar } = snackbarStore
-            showSuccessSnackbar('Utilisateur ajouté avec succès')
+            showSuccessSnackbar('User successfully added')
 
             resolve(data.value)
           }
@@ -48,7 +48,7 @@ export const useUserStore = defineStore('user', {
           if (status.value === 'success') {
             const snackbarStore = useSnackbarStore()
             const { showSuccessSnackbar } = snackbarStore
-            showSuccessSnackbar('Utilisateur modifié avec succès')
+            showSuccessSnackbar('User successfully Updated')
 
             resolve(data.value)
           }
@@ -63,7 +63,7 @@ export const useUserStore = defineStore('user', {
           if (status.value === 'success') {
             const snackbarStore = useSnackbarStore()
             const { showSuccessSnackbar } = snackbarStore
-            showSuccessSnackbar('Utilisateur supprimé avec succès')
+            showSuccessSnackbar('User successfully deleted')
 
             resolve(null)
           }
@@ -78,7 +78,7 @@ export const useUserStore = defineStore('user', {
           if (status.value === 'success') {
             const snackbarStore = useSnackbarStore()
             const { showSuccessSnackbar } = snackbarStore
-            showSuccessSnackbar('Utilisateur bloqué avec succès')
+            showSuccessSnackbar('User successfully locked')
 
             resolve(data.value)
           }
@@ -93,7 +93,7 @@ export const useUserStore = defineStore('user', {
           if (status.value === 'success') {
             const snackbarStore = useSnackbarStore()
             const { showSuccessSnackbar } = snackbarStore
-            showSuccessSnackbar('Utilisateur débloqué avec succès')
+            showSuccessSnackbar('User successfully unlocked')
 
             resolve(data.value)
           }

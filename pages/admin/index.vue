@@ -9,13 +9,13 @@
                 <span class="text-h5 text-uppercase">{{ currentUser.email[0] }}</span>
               </v-avatar>
               <p class="ml-5 mt-2 overflow-auto">
-                Bonjour <br>
+                Hello <br>
                 <strong class="text-yellow">{{ currentUser.email }}</strong>
               </p>
             </div>
             <v-divider class="my-2" />
             <p class="ml-5">
-              Bienvenu sur votre tableau de bord personnel
+              Welcome to your personal dashboard
             </p>
           </v-card-text>
         </v-card>
@@ -27,7 +27,7 @@
             v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.READ])"
             class="mb-1"
           >
-            Chiffres clés des transactions effectuées avec succès
+            Key figures for successful transactions
           </p>
           <p
             v-else-if="
@@ -35,7 +35,7 @@
             "
             class="mb-1"
           >
-            Chiffres clés des vos transactions effectuées avec succès
+            Key figures for successful transactions
           </p>
           <TransactionKeyData />
         </div>
@@ -48,7 +48,7 @@
           <v-icon class="text-primary mr-4">
             mdi-alert-octagram
           </v-icon>
-          <span>Dernières transactions enregistrées</span>
+          <span>Latest transactions recorded</span>
         </p>
         <v-card rounded="xl" elevation="0">
           <v-card-text>
@@ -63,7 +63,7 @@
             elevation="0"
             rounded="xl"
           >
-            Afficher toutes les transactions
+            Show all transactions
           </v-btn>
         </div>
       </v-col>

@@ -4,10 +4,10 @@
       <v-card-text>
         <div class="text-center py-16">
           <h1 class="mb-10">
-            Vous n'êtes pas autorisé à accéder à cette page
+            You are not authorized to access this page
           </h1>
           <v-btn to="/" color="primary" rounded="xl" elevation="0">
-            <span class="text-none">Retourner à l'accueil</span>
+            <span class="text-none">Back to home page</span>
           </v-btn>
         </div>
       </v-card-text>

@@ -22,13 +22,13 @@ export const useFetchApi = (requestUrl: string, opts: any): Promise<{ data: any,
     }).then((response) => {
       if (response.error.value) {
         if (response.error.value.statusCode === 403) {
-          showErrorSnackbar('Vous n\'avez pas les autorisations nécessaires pour effectuer cette action ou accéder à cette ressource')
+          showErrorSnackbar('You are not authorized to perform this action or access this resource.')
         } else if (
           response.error.value.statusCode === 400 ||
           response.error.value.statusCode === 409 ||
           response.error.value.statusCode === 422
         ) {
-          let message = 'Les données soumises sont incorrectes. '
+          let message = 'The data submitted is incorrect. '
           if (response.error.value.data && response.error.value.data.msg) {
             if (typeof response.error.value.data.msg === 'string') {
               message += response.error.value.data.msg
@@ -48,12 +48,12 @@ export const useFetchApi = (requestUrl: string, opts: any): Promise<{ data: any,
             showErrorSnackbar(response.error.value.data.msg)
           } else {
             const msg = response.error.value.data && response.error.value.data.msg
-              ? `Détails : ${response.error.value.data.msg}`
+              ? `Details : ${response.error.value.data.msg}`
               : ''
-            showErrorSnackbar(`Une erreur est survenue au niveau du serveur, veuillez contacter l'administrateur. ${msg}`)
+            showErrorSnackbar(`An error has occurred on the server, please contact the administrator. ${msg}`)
           }
         } else if (response.error.value.statusCode === 401 && requestUrl !== '/auth/signin') {
-          showErrorSnackbar('Votre session a expirée, veuillez vous reconnecter')
+          showErrorSnackbar('Your session has expired, please log in again.')
           signOut({ callbackUrl: '/login' })
         }
       }

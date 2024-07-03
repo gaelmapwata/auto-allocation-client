@@ -5,7 +5,7 @@
     :submit="onSubmit"
     :action-loading="actionLoading"
     width="400"
-    action-text="Confirmer"
+    action-text="Confirm"
   >
     <Form
       ref="form"
@@ -47,7 +47,7 @@ const { updateUser, storeUser } = userStore
 const form = ref<typeof Form>()
 const actionLoading = ref(false)
 
-const dialogTitle = computed(() => (props.action === 'create' ? 'Création d\'un utilisateur' : 'Modifier l\' utilisateur'))
+const dialogTitle = computed(() => (props.action === 'create' ? 'User created' : 'User updated'))
 const dialog = computed({
   get () {
     return props.modelValue
@@ -64,12 +64,12 @@ const initialValues = computed(() => {
 })
 
 const fields = computed(() => [
-  { name: 'email', placeholder: 'Veuillez entre l\' email', label: 'Email', type: 'text' },
-  { name: 'validateMaxAmountCDF', label: 'Montant de validation maximum (CDF)', type: 'number' },
-  { name: 'validateMaxAmountUSD', label: 'Montant de validation maximum (USD)', type: 'number' },
+  { name: 'email', placeholder: 'Please enter the email', label: 'Email', type: 'text' },
+  { name: 'validateMaxAmountCDF', label: 'Maximum validation amount (CDF)', type: 'number' },
+  { name: 'validateMaxAmountUSD', label: 'Maximum validation amount (USD)', type: 'number' },
   {
     name: 'roles',
-    placeholder: 'Veuillez sélectionner les roles',
+    placeholder: 'Please select roles',
     label: 'Roles',
     type: 'select-multiple',
     items: roles.value,
@@ -80,8 +80,8 @@ const fields = computed(() => [
 const formSchema = object({
   email: string()
     .max(255)
-    .required('Veuillez renseigner l\'e-mail')
-    .email('Veuillez renseigner un email valide'),
+    .required('Please fill in the e-mail')
+    .email('Please enter a valid email address'),
   validateMaxAmountCDF: number()
     .nullable()
     .transform((value: unknown, originalValue: unknown) => (originalValue === '' ? null : value)),
@@ -115,7 +115,7 @@ async function onSubmit () {
       form.value.resetForm()
       dialog.value = false
     } else {
-      showErrorSnackbar('Formulaire incorrect')
+      showErrorSnackbar('Incorrect form')
     }
   }
 }

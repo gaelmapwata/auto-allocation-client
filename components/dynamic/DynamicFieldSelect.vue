@@ -17,7 +17,7 @@
     flat
   >
     <template v-if="selectFilter" #prepend-item>
-      <v-text-field v-model="filter" placeholder="Rechercher" />
+      <v-text-field v-model="filter" placeholder="Search" />
     </template>
 
     <template v-if="itemSubtitle" #item="{ props: selectProps, item }">

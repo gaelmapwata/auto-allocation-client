@@ -5,7 +5,7 @@
     :submit="onSubmit"
     :action-loading="actionLoading"
     width="400"
-    action-text="Confirmer"
+    action-text="Confirm"
   >
     <Form
       ref="form"
@@ -41,7 +41,7 @@ const { updateRole, storeRole } = roleStore
 const form = ref<typeof Form>()
 const actionLoading = ref(false)
 
-const dialogTitle = computed(() => (props.action === 'create' ? 'Création de role' : 'Modifier le role'))
+const dialogTitle = computed(() => (props.action === 'create' ? 'Role creation' : 'Role Update'))
 const dialog = computed({
   get () {
     return props.modelValue
@@ -58,12 +58,12 @@ const initialValues = computed(() => {
 })
 
 const fields = [
-  { name: 'name', placeholder: 'Veuillez entre le nom', label: 'Nom', type: 'text' }
+  { name: 'name', placeholder: 'Please enter the name', label: 'Name', type: 'text' }
 ]
 const formSchema = object({
   name: string()
     .max(255)
-    .required('Veuillez renseigner le nom')
+    .required('Please fill in the name')
 })
 
 async function onSubmit () {
@@ -80,7 +80,7 @@ async function onSubmit () {
       form.value.resetForm()
       dialog.value = false
     } else {
-      showErrorSnackbar('Formulaire incorrect')
+      showErrorSnackbar('Incorrect form')
     }
   }
 }

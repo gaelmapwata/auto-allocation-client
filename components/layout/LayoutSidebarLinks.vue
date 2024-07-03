@@ -73,7 +73,7 @@
   </template>
 
   <div>
-    <small class="ml-3">Compte</small>
+    <small class="ml-3">Account</small>
     <v-card density="compact" class="mt-1 mb-4" rounded="xl" elevation="0">
       <template #text>
         <v-list class="py-0">
@@ -84,7 +84,7 @@
               </div>
             </template>
 
-            <v-list-item-title>Se déconnecter</v-list-item-title>
+            <v-list-item-title>Disconnect</v-list-item-title>
           </v-list-item>
         </v-list>
       </template>
@@ -117,19 +117,19 @@ const groupedMenuItems: Array<{
     text: 'Menu',
     items: [
       {
-        text: 'Accueil',
+        text: 'Home',
         icon: 'mdi-view-dashboard',
         to: '/admin',
         permissions: [PERMISSIONS.TRANSACTION.READ, PERMISSIONS.TRANSACTION.READ_OWN_TRANSACTIONS]
       },
       {
-        text: 'Insertion',
+        text: 'Initiate Transaction',
         icon: 'mdi-bank-plus',
         to: '/admin/ajout-transaction-airtel-money',
         permissions: [PERMISSIONS.TRANSACTION.CREATE]
       },
       {
-        text: 'Validation',
+        text: 'Validate Transaction',
         icon: 'mdi-bank',
         to: '/admin/transactions-to-validate',
         permissions: [
@@ -149,7 +149,7 @@ const groupedMenuItems: Array<{
     text: 'Administration',
     items: [
       {
-        text: 'Utilisateurs',
+        text: 'Users',
         icon: 'mdi-account-group',
         to: '/admin/users',
         permissions: [PERMISSIONS.USER.READ]

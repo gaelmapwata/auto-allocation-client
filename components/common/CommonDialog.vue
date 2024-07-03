@@ -20,7 +20,7 @@
           class="px-5"
           @click="onCancel()"
         >
-          <span class="text-none" style="letter-spacing: 0;">Annuler</span>
+          <span class="text-none" style="letter-spacing: 0;">Cancel</span>
         </v-btn>
         <v-btn
           :loading="loading"

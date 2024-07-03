@@ -8,7 +8,7 @@
         rounded="xl"
         @click="onAddUser()"
       >
-        <span class="text-none">Ajouter</span>
+        <span class="text-none">Add</span>
       </v-btn>
       <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.UPDATE])"
@@ -19,7 +19,7 @@
         class="ml-2"
         @click="onEditUser()"
       >
-        <span class="text-none">Modifier</span>
+        <span class="text-none">Update</span>
       </v-btn>
       <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.DELETE])"
@@ -31,7 +31,7 @@
         class="ml-2"
         @click="onDeleteUser()"
       >
-        <span class="text-none">Supprimer</span>
+        <span class="text-none">Delete</span>
       </v-btn>
     </div>
 
@@ -45,7 +45,7 @@
           :headers="(headers as any)"
           :items="users"
           :loading="usersLoading"
-          items-per-page-text="Items par page"
+          items-per-page-text="Items per page"
           item-value="id"
           select-strategy="single"
           show-select
@@ -108,7 +108,7 @@ definePageMeta({
 })
 
 useAdminBreadcrumb('mdi-account-group', [{
-  title: 'Utilisateurs',
+  title: 'Users',
   href: '/admin/users'
 }])
 
@@ -131,7 +131,7 @@ const locksInLoading = ref<boolean[]>([])
 const usersLoading = ref(false)
 
 const textConfirmDeletion = computed(
-  () => `Voulez-vous vraiment supprimer l'utilisateur <strong>"${selectedUser.value?.email}"</strong> ?`
+  () => `Do you really want to delete the user <strong>"${selectedUser.value?.email}"</strong> ?`
 )
 
 const selectedUser = computed<UserI | null>(
@@ -154,15 +154,15 @@ const headers = [
     key: 'roles'
   },
   {
-    title: 'Montant de validation maximum (CDF)',
+    title: 'Maximum validation amount (CDF)',
     key: 'validateMaxAmountCDF'
   },
   {
-    title: 'Montant de validation maximum (USD)',
+    title: 'Maximum validation amount (USD)',
     key: 'validateMaxAmountUSD'
   },
   {
-    title: 'Bloquer',
+    title: 'Locked',
     key: 'lock'
   }
 ]

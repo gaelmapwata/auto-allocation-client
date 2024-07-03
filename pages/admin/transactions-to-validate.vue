@@ -20,7 +20,7 @@
           :items="transactions"
           :loading="transactionsLoading"
           item-value="id"
-          items-per-page-text="Items par page"
+          items-per-page-text="Items per page"
           @update:options="loadTransactions"
         >
           <template #[`item.index`]="{ index }">
@@ -60,7 +60,7 @@
       v-model="confirmTransactionDialogVisible"
       :text="textConfirmDeletion"
       action-icon="mdi-check"
-      action-text="Confirmer"
+      action-text="Confirm"
       @confirm="onConfirmTransactionValidation"
     />
   </div>
@@ -82,7 +82,7 @@ definePageMeta({
 })
 
 useAdminBreadcrumb('mdi-security', [{
-  title: 'Transactions à valider',
+  title: 'Transactions to be validated',
   href: '/admin/transaction-to-validate'
 }])
 
@@ -103,10 +103,10 @@ const confirmTransactionLoading = ref(false)
 const transactionToValidate = ref<TransactionI>()
 
 const textConfirmDeletion = computed(() => (transactionToValidate.value
-  ? `Voulez-vous vraiment confirmer la transaction de
+  ? `Do you really want to confirm the
     ${parseFloat((transactionToValidate.value?.amount as number).toString())} ${transactionToValidate.value?.currency}
-    du compte ${transactionToValidate.value?.drAcctNum} vers le compte ${transactionToValidate.value?.crAcctNum}`
-  : 'Aucune transaction selectionnée'))
+    of account ${transactionToValidate.value?.drAcctNum} to the account ${transactionToValidate.value?.crAcctNum}`
+  : 'No transactions selected'))
 
 const headers = [
   {
@@ -131,22 +131,22 @@ const headers = [
     sortable: false
   },
   {
-    title: 'Effectué par',
+    title: 'Performed by',
     key: 'user',
     sortable: false
   },
   {
-    title: 'Compte à débiter',
+    title: 'Account to be debited',
     key: 'drAcctNum',
     sortable: false
   },
   {
-    title: 'Compte à créditer',
+    title: 'Account to be credited',
     key: 'crAcctNum',
     sortable: false
   },
   {
-    title: 'Montant',
+    title: 'Amount',
     key: 'amount',
     sortable: false
   },
