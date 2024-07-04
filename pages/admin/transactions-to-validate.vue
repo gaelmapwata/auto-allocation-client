@@ -41,7 +41,8 @@
           <template #[`item.actions`]="{ item }">
             <v-btn
               v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.VALIDATE])"
-              :disabled="confirmTransactionLoading || !currentUserCanValidateTransaction(item)"
+              :disabled="confirmTransactionLoadings.some(loading => loading) || !currentUserCanValidateTransaction(item)"
+              :loading="confirmTransactionLoadings[item.id]"
               elevation="0"
               width="150"
               rounded="xl"
@@ -99,7 +100,7 @@ const transactionsLoading = ref(false)
 const filter = ref<Record<string, string | boolean | number>>({})
 const totalItems = ref(0)
 const confirmTransactionDialogVisible = ref(false)
-const confirmTransactionLoading = ref(false)
+const confirmTransactionLoadings = ref<boolean[]>([]])
 const transactionToValidate = ref<TransactionI>()
 
 const textConfirmDeletion = computed(() => (transactionToValidate.value
@@ -168,10 +169,14 @@ function showConfirmTransactionValidationDialog (transaction: TransactionI) {
 }
 
 function onConfirmTransactionValidation () {
-  confirmTransactionLoading.value = true
-  validateTransaction(transactionToValidate.value?.id as number)
+  if (!transactionToValidate.value) return
+
+  const transactionId = transactionToValidate.value.id as number
+
+  confirmTransactionLoadings.value[transactionId] = true
+  validateTransaction(transactionId)
     .finally(() => {
-      confirmTransactionLoading.value = false
+      confirmTransactionLoadings.value[transactionId] = false
       loadTransactions()
     })
 }
