@@ -100,7 +100,7 @@ const transactionsLoading = ref(false)
 const filter = ref<Record<string, string | boolean | number>>({})
 const totalItems = ref(0)
 const confirmTransactionDialogVisible = ref(false)
-const confirmTransactionLoadings = ref<boolean[]>([]])
+const confirmTransactionLoadings = ref<boolean[]>([])
 const transactionToValidate = ref<TransactionI>()
 
 const textConfirmDeletion = computed(() => (transactionToValidate.value
@@ -169,7 +169,7 @@ function showConfirmTransactionValidationDialog (transaction: TransactionI) {
 }
 
 function onConfirmTransactionValidation () {
-  if (!transactionToValidate.value) return
+  if (!transactionToValidate.value) { return }
 
   const transactionId = transactionToValidate.value.id as number
 

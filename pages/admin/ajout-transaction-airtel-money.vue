@@ -185,7 +185,7 @@
       v-model="confirmDialogVisible"
       :text="textConfirmDeletion"
       action-icon="mdi-check"
-      action-text="Confirmer"
+      action-text="Confirm"
       @confirm="onConfirmTransaction"
     />
   </div>
