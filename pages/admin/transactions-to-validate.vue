@@ -50,7 +50,7 @@
               color="green"
               @click="showConfirmTransactionValidationDialog(item)"
             >
-              <span class="text-none">Valider</span>
+              <span class="text-none">Validate</span>
             </v-btn>
           </template>
         </v-data-table-server>
@@ -83,7 +83,7 @@ definePageMeta({
 })
 
 useAdminBreadcrumb('mdi-security', [{
-  title: 'Transactions to be validated',
+  title: 'Transactions to be validate',
   href: '/admin/transaction-to-validate'
 }])
 
@@ -183,10 +183,10 @@ function onConfirmTransactionValidation () {
 
 function currentUserCanValidateTransaction (transaction: TransactionI) {
   if (transaction.currency === CURRENCIES.CDF && currentUser.validateMaxAmountCDF) {
-    return transaction.amount <= currentUser.validateMaxAmountCDF
+    return (+transaction.amount) <= (+currentUser.validateMaxAmountCDF)
   }
   if (transaction.currency === CURRENCIES.USD && currentUser.validateMaxAmountUSD) {
-    return transaction.amount <= currentUser.validateMaxAmountUSD
+    return (+transaction.amount) <= (+currentUser.validateMaxAmountUSD)
   }
   return true
 }

@@ -59,7 +59,7 @@ import { Value } from 'sass';
           class="mx-1 mb-2"
           @click="handleFilter()"
         >
-          <span class="text-none">Filter</span>
+          <span class="text-none">Search</span>
         </v-btn>
 
         <v-btn

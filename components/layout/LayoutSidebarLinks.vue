@@ -84,7 +84,7 @@
               </div>
             </template>
 
-            <v-list-item-title>Disconnect</v-list-item-title>
+            <v-list-item-title>Log out</v-list-item-title>
           </v-list-item>
         </v-list>
       </template>
@@ -129,7 +129,7 @@ const groupedMenuItems: Array<{
         permissions: [PERMISSIONS.TRANSACTION.CREATE]
       },
       {
-        text: 'Validate Transaction',
+        text: 'Approve Transactions',
         icon: 'mdi-bank',
         to: '/admin/transactions-to-validate',
         permissions: [
