@@ -41,7 +41,8 @@
           <template #[`item.actions`]="{ item }">
             <v-btn
               v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.VALIDATE])"
-              :disabled="confirmTransactionLoading || !currentUserCanValidateTransaction(item)"
+              :disabled="confirmTransactionLoadings.some(loading => loading) || !currentUserCanValidateTransaction(item)"
+              :loading="confirmTransactionLoadings[item.id]"
               elevation="0"
               width="150"
               rounded="xl"
@@ -49,7 +50,7 @@
               color="green"
               @click="showConfirmTransactionValidationDialog(item)"
             >
-              <span class="text-none">Valider</span>
+              <span class="text-none">Validate</span>
             </v-btn>
           </template>
         </v-data-table-server>
@@ -82,7 +83,7 @@ definePageMeta({
 })
 
 useAdminBreadcrumb('mdi-security', [{
-  title: 'Transactions to be validated',
+  title: 'Transactions to be validate',
   href: '/admin/transaction-to-validate'
 }])
 
@@ -99,7 +100,7 @@ const transactionsLoading = ref(false)
 const filter = ref<Record<string, string | boolean | number>>({})
 const totalItems = ref(0)
 const confirmTransactionDialogVisible = ref(false)
-const confirmTransactionLoading = ref(false)
+const confirmTransactionLoadings = ref<boolean[]>([])
 const transactionToValidate = ref<TransactionI>()
 
 const textConfirmDeletion = computed(() => (transactionToValidate.value
@@ -168,20 +169,24 @@ function showConfirmTransactionValidationDialog (transaction: TransactionI) {
 }
 
 function onConfirmTransactionValidation () {
-  confirmTransactionLoading.value = true
-  validateTransaction(transactionToValidate.value?.id as number)
+  if (!transactionToValidate.value) { return }
+
+  const transactionId = transactionToValidate.value.id as number
+
+  confirmTransactionLoadings.value[transactionId] = true
+  validateTransaction(transactionId)
     .finally(() => {
-      confirmTransactionLoading.value = false
+      confirmTransactionLoadings.value[transactionId] = false
       loadTransactions()
     })
 }
 
 function currentUserCanValidateTransaction (transaction: TransactionI) {
   if (transaction.currency === CURRENCIES.CDF && currentUser.validateMaxAmountCDF) {
-    return transaction.amount <= currentUser.validateMaxAmountCDF
+    return (+transaction.amount) <= (+currentUser.validateMaxAmountCDF)
   }
   if (transaction.currency === CURRENCIES.USD && currentUser.validateMaxAmountUSD) {
-    return transaction.amount <= currentUser.validateMaxAmountUSD
+    return (+transaction.amount) <= (+currentUser.validateMaxAmountUSD)
   }
   return true
 }
