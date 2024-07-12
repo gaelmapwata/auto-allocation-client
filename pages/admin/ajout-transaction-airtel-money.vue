@@ -107,10 +107,11 @@
                 <div class="my-5">
                   <Field v-slot="{ field, errorMessage }" name="currency">
                     <v-select
-                      v-model="currencyTransaction"
+                      v-model="currencyKYC"
                       v-bind="field"
                       :items="['USD', 'CDF']"
                       :error-messages="errorMessage"
+                      disabled
                       variant="solo-filled"
                       label="Currency"
                       rounded
@@ -193,11 +194,11 @@
 
 <script lang="ts" setup>
 import { number, object, string } from 'yup'
+import { Form } from 'vee-validate'
 import { useAirtelMoneyStore } from '@/stores/airtel-money'
 import { useTransactionStore } from '@/stores/transaction'
 import { useSnackbarStore } from '@/stores/snackbar'
 import { CheckKYCResponseI } from '~/types/airtel-money'
-import { Form } from 'vee-validate'
 import { PERMISSIONS, shouldHaveOneOfPermissions } from '~/utilities/auth.util'
 import { AUTHORIZED_KYC_GRADE } from '~/utilities/variables.util'
 
@@ -231,7 +232,6 @@ const stepOneSchema = object({
 })
 const stepTransactionSchema = {
   amount: number().required(),
-  currency: string().required(),
   ...(
     canManuallySetAccountNumber
       ? {
@@ -253,7 +253,6 @@ const confirmDialogVisible = ref(false)
 const kycDetails = ref<CheckKYCResponseI>()
 const textConfirmDeletion = ref('')
 const currencyKYC = ref(null)
-const currencyTransaction = ref(null)
 
 const isKYCGradeAuthorized = computed(() => kycDetails.value &&
   AUTHORIZED_KYC_GRADE.some(grade => grade.toLowerCase() === kycDetails.value?.grade.toLowerCase()))
@@ -280,8 +279,9 @@ function saveTransaction () {
   if (!isValidKYC.value) {
     showErrorSnackbar('This msisdn is not authorized')
   } else {
-    const { amount, currency } = transactionFormRef.value?.getValues() as {
-      amount: number, currency: string
+    const currency = currencyKYC.value
+    const { amount } = transactionFormRef.value?.getValues() as {
+      amount: number
     }
     const msisdn = msisdnFormRef.value?.getValues().msisdn
 
@@ -306,7 +306,6 @@ function onConfirmTransaction () {
       msisdnFormRef.value?.resetForm()
       transactionFormRef.value?.resetForm()
       currencyKYC.value = null
-      currencyTransaction.value = null
       saveLoading.value = false
     })
     .catch(() => { saveLoading.value = false })
