@@ -1,4 +1,6 @@
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import fs from 'fs'
+import path from 'path'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -35,7 +37,14 @@ export default defineNuxtConfig({
       template: {
         transformAssetUrls
       }
+    },
+    server: {
+      https: {
+        key: fs.readFileSync(path.resolve(__dirname, '10.80.6.136-key.pem')),
+        cert: fs.readFileSync(path.resolve(__dirname, '10.80.6.136.pem'))
+      }
     }
+
   },
   auth: {
     provider: {
