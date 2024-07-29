@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 nuxt dev --https --ssl-cert 10.80.6.136.pem --ssl-key 10.80.6.136-key.pem",
+    "dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "start": "nuxt start",
     "postinstall": "nuxt prepare",
     "lint": "eslint --ext \".ts,.vue\" --ignore-path .gitignore ."
   },
@@ -36,6 +37,7 @@
     "@vee-validate/nuxt": "^4.11.7",
     "@vee-validate/yup": "^4.11.7",
     "@vuepic/vue-datepicker": "^6.1.0",
+    "cross-env": "^7.0.3",
     "date-fns": "^2.30.0",
     "pinia": "^2.1.6",
     "sass": "^1.68.0",
