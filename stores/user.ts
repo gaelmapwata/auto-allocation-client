@@ -99,6 +99,24 @@ export const useUserStore = defineStore('user', {
           }
         })
       })
+    },
+
+    validateUser (userId: number) {
+      return new Promise((resolve) => {
+        useFetchApi(`/users/${userId}/validate`, {
+          method: 'put'
+        }).then(({ status, data }) => {
+          if (status.value === 'success') {
+            const snackbarStore = useSnackbarStore()
+            const { showSuccessSnackbar } = snackbarStore
+            showSuccessSnackbar('User successfully validated')
+
+            resolve(data.value)
+          } else {
+            resolve(null)
+          }
+        })
+      })
     }
   }
 })

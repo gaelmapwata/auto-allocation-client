@@ -7,3 +7,10 @@ export interface RoleI {
   permissions?: PermissionI[]
   ressources?: RessourceI[]
 }
+
+export enum RoleE {
+  ADMIN = 'admin',
+  TELLER = 'TELLER',
+  DOMOPS = 'DOMOPS',
+  CSO = 'CSO',
+}

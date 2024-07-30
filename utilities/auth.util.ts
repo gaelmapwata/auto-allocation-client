@@ -1,4 +1,5 @@
 import { NavigationGuardNext } from 'vue-router'
+import { RoleE } from '~/types/role'
 import { UserI } from '~/types/user'
 
 export const shouldHaveOneOfPermissions =
@@ -33,6 +34,9 @@ export const userHasOneOfPermissions =
             currentUserPermission?.slug === (`${p.split(':')[0]}:ALL`)))
   }
 
+// eslint-disable-next-line max-len
+export const userIsAdmin = (currentUser: UserI): boolean => !!currentUser.roles && currentUser.roles.some(role => role.name === RoleE.ADMIN)
+
 export const PERMISSIONS = {
   USER: {
     CREATE: 'USER:CREATE',
@@ -40,7 +44,8 @@ export const PERMISSIONS = {
     DELETE: 'USER:DELETE',
     UPDATE: 'USER:UPDATE',
     LOCK: 'USER:LOCK',
-    UNLOCK: 'USER:UNLOCK'
+    UNLOCK: 'USER:UNLOCK',
+    VALIDATE: 'USER:VALIDATE'
   },
   ROLE: {
     CREATE: 'ROLE:CREATE',

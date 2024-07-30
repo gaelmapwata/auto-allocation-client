@@ -33,6 +33,21 @@
       >
         <span class="text-none">Delete</span>
       </v-btn>
+      <v-btn
+        v-if="
+          userHasOneOfPermissions(currentUser, [PERMISSIONS.USER.VALIDATE])
+            && selectedUserCanBeValidated
+        "
+        :disabled="validationInLoading"
+        :loading="validationInLoading"
+        prepend-icon="mdi-check"
+        color="white"
+        rounded="xl"
+        class="ml-2"
+        @click="onValidateUser()"
+      >
+        <span class="text-none">Validate Admin</span>
+      </v-btn>
     </div>
 
     <v-card rounded="xl" elevation="0">
@@ -61,6 +76,15 @@
                 {{ role.name }}
               </v-chip>
             </v-chip-group>
+            <v-chip
+              v-if="userCanBeValidated(item)"
+              color="green"
+              variant="tonal"
+              size="small"
+              class="mb-2"
+            >
+              Waiting for validation
+            </v-chip>
           </template>
           <template #[`item.lock`]="{ item }">
             <v-switch
@@ -97,7 +121,7 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
-import { PERMISSIONS, shouldHaveOneOfPermissions, userHasOneOfPermissions } from '@/utilities/auth.util'
+import { PERMISSIONS, shouldHaveOneOfPermissions, userHasOneOfPermissions, userIsAdmin } from '@/utilities/auth.util'
 import { UserI } from '~/types/user'
 
 definePageMeta({
@@ -116,7 +140,7 @@ const { data: currentUserData } = useAuth()
 const currentUser = currentUserData.value as UserI
 
 const userStore = useUserStore()
-const { fetchUsersWithPagination, deleteUser, lockUser, unlockUser } = userStore
+const { fetchUsersWithPagination, deleteUser, lockUser, unlockUser, validateUser } = userStore
 
 const itemsPerPage = ref(10)
 const page = ref(1)
@@ -127,6 +151,7 @@ const userFormDialogVisible = ref(false)
 const userFormDialogAction = ref<string | undefined>(undefined)
 const confirmDialogVisible = ref(false)
 const deletionInLoading = ref(false)
+const validationInLoading = ref(false)
 const locksInLoading = ref<boolean[]>([])
 const usersLoading = ref(false)
 
@@ -136,6 +161,10 @@ const textConfirmDeletion = computed(
 
 const selectedUser = computed<UserI | null>(
   () => (selectedUsers.value.length > 0 ? selectedUsers.value[0] : null)
+)
+
+const selectedUserCanBeValidated = computed<boolean>(
+  () => !!selectedUser.value && userCanBeValidated(selectedUser.value)
 )
 
 const headers = [
@@ -167,6 +196,10 @@ const headers = [
   }
 ]
 
+function userCanBeValidated (user: UserI): boolean {
+  return userIsAdmin(user) && !user.validatedByUserId
+}
+
 function onEditUser () {
   userFormDialogAction.value = 'update'
   userFormDialogVisible.value = true
@@ -187,6 +220,19 @@ async function onConfirmDeletion () {
     await deleteUser(selectedUser.value.id)
     refreshUsers()
     deletionInLoading.value = false
+  }
+}
+
+async function onValidateUser () {
+  if (selectedUser.value) {
+    validationInLoading.value = true
+    try {
+      await validateUser(selectedUser.value.id)
+      refreshUsers()
+      validationInLoading.value = false
+    } catch (error) {
+      validationInLoading.value = false
+    }
   }
 }
 
