@@ -58,7 +58,10 @@ const dialog = computed({
 })
 const initialValues = computed(() => {
   if (props.action === 'update') {
-    return props.entity || {}
+    return {
+      ...props.entity,
+      roleId: props.entity?.roles?.[0]?.id || null
+    }
   }
   return {}
 })
@@ -68,10 +71,10 @@ const fields = computed(() => [
   { name: 'validateMaxAmountCDF', label: 'Maximum validation amount (CDF)', type: 'number' },
   { name: 'validateMaxAmountUSD', label: 'Maximum validation amount (USD)', type: 'number' },
   {
-    name: 'roles',
-    placeholder: 'Please select roles',
-    label: 'Roles',
-    type: 'select-multiple',
+    name: 'roleId',
+    placeholder: 'Please select role',
+    label: 'Role',
+    type: 'select',
     items: roles.value,
     loading: roleLoading.value
   }
@@ -107,7 +110,6 @@ async function onSubmit () {
         await storeUser(userPayload)
         emit('created')
       } else if (props.action === 'update') {
-        userPayload.roles = userPayload.roles.map((role: number | RoleI) => (typeof role === 'object' ? role.id : role))
         await updateUser(userPayload)
         emit('updated')
       }

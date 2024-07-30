@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="d-flex mb-4 justify-end">
-      <v-btn
+      <!-- <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.CREATE])"
         prepend-icon="mdi-plus"
         color="primary"
@@ -20,7 +20,7 @@
         @click="onEditRole()"
       >
         <span class="text-none">Update</span>
-      </v-btn>
+      </v-btn> -->
       <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.DELETE])"
         :disabled="!selectedRole || deletionInLoading"
@@ -33,7 +33,7 @@
       >
         <span class="text-none">Delete</span>
       </v-btn>
-      <v-btn
+      <!-- <v-btn
         v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.ROLE.UPDATE_PERMISSIONS])"
         :disabled="!selectedRole"
         prepend-icon="mdi-shield-account"
@@ -43,7 +43,7 @@
         @click="onUpdatePermissions()"
       >
         <span class="text-none">Update permissions</span>
-      </v-btn>
+      </v-btn> -->
     </div>
 
     <v-card rounded="xl" elevation="0">
