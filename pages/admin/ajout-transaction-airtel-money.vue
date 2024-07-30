@@ -95,7 +95,7 @@
                       v-bind="field"
                       :error-messages="errorMessage"
                       variant="solo-filled"
-                      label="Insérer le montant de la transaction"
+                      label="Enter the amount of the transaction"
                       placeholder="Amount"
                       type="number"
                       rounded
@@ -231,7 +231,7 @@ const stepOneSchema = object({
   currency: string().required()
 })
 const stepTransactionSchema = {
-  amount: number().required(),
+  amount: number().positive().required(),
   ...(
     canManuallySetAccountNumber
       ? {
