@@ -67,6 +67,7 @@ import { Form, Field } from 'vee-validate'
 import { object, string } from 'yup'
 import { useSnackbarStore } from '@/stores/snackbar'
 import { useAuthStore } from '@/stores/auth'
+import CryptoUtil from '~/utilities/CryptoUtil'
 
 interface FormValueI {
   email: string;
@@ -75,6 +76,7 @@ interface FormValueI {
 
 const authStore = useAuthStore()
 const snackbarStore = useSnackbarStore()
+const runtimeConfig = useRuntimeConfig()
 
 const passwordVisible = ref(false)
 const loading = ref(false)
@@ -91,7 +93,10 @@ const loginSchema = object({
 })
 
 function onSubmit (values: FormValueI) {
-  authStore.signin(values)
+  authStore.signin({
+    ...values,
+    password: CryptoUtil.encrypt(values.password, runtimeConfig.public.cryptoPrivateKey)
+  })
     .then(({ error, data }) => {
       loading.value = false
       if (error.value) {
