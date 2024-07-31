@@ -8,20 +8,18 @@
     <v-card>
       <v-toolbar
         color="primary"
-        title="Confirm your OTP"
+        title="Confirm your Token"
       />
       <v-card-text class="pa-6">
         <div>
-          An email containing a code to <strong class="text-primary">6 digits</strong>,
-          with a validity of <strong class="text-primary">5 minutes</strong>,
-          has been sent to you to confirm your connection,
-
+          use your physical or soft token a code to <strong class="text-primary">8 digits</strong>,
           Please enter it here.
         </div>
 
         <div class="mt-4">
           <v-otp-input
             v-model="otp"
+            length="8"
             type="number"
             @update:model-value="otpFieldValue = otp"
           />
@@ -73,9 +71,9 @@ const otp = ref<string>('')
 const { showErrorSnackbar, showSuccessSnackbar } = snackbarStore
 
 const { value: otpFieldValue, meta: otpFieldMeta } = useField('', string()
-  .length(6, 'Please enter a 6-digit code')
+  .length(8, 'Please enter a 8-digit code')
   .matches(/^[0-9]+$/, 'Otp can only contain numbers')
-  .required('Please enter the OTP'))
+  .required('Please enter the token'))
 
 const dialog = computed({
   get () {
