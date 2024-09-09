@@ -183,6 +183,14 @@ const headers = [
     key: 'roles'
   },
   {
+    title: 'accountNumberCDF',
+    key: 'accountNumberCDF'
+  },
+  {
+    title: 'accountNumberUSD',
+    key: 'accountNumberUSD'
+  },
+  {
     title: 'Maximum validation amount (CDF)',
     key: 'validateMaxAmountCDF'
   },

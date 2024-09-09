@@ -68,6 +68,8 @@ const initialValues = computed(() => {
 
 const fields = computed(() => [
   { name: 'email', placeholder: 'Please enter the email', label: 'Email', type: 'text' },
+  { name: 'accountNumberCDF', placeholder: 'accountNumberCDF', label: 'accountNumberCDF', type: 'text' },
+  { name: 'accountNumberUSD', placeholder: 'accountNumberUSD', label: 'accountNumberUSD', type: 'text' },
   { name: 'validateMaxAmountCDF', label: 'Maximum validation amount (CDF)', type: 'number' },
   { name: 'validateMaxAmountUSD', label: 'Maximum validation amount (USD)', type: 'number' },
   {
