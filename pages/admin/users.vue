@@ -100,6 +100,9 @@
               @update:model-value="onToggleLockState($event, item)"
             />
           </template>
+          <template #[`item.branch`]="{ item }">
+            {{ item.branch?.label }}
+          </template>
         </v-data-table-server>
       </template>
     </v-card>
@@ -189,6 +192,10 @@ const headers = [
   {
     title: 'accountNumberUSD',
     key: 'accountNumberUSD'
+  },
+  {
+    title: 'Branch',
+    key: 'branch'
   },
   {
     title: 'Maximum validation amount (CDF)',
