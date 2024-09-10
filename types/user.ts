@@ -1,3 +1,4 @@
+import { BranchI } from './branch'
 import { RoleI } from './role'
 
 export interface UserI {
@@ -9,4 +10,5 @@ export interface UserI {
   validatedByUserId: number;
   locked: boolean;
   roles?: RoleI[];
+  branch?: BranchI;
 }

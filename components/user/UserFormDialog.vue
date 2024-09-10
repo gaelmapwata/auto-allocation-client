@@ -26,11 +26,13 @@ import { useRoleStore } from '@/stores/role'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { UserI } from '~/types/user'
-import { RoleI } from '~/types/role'
+import { BranchI } from '~/types/branch'
+import { useBranchStore } from '~/stores/branch'
 
 const snackbarStore = useSnackbarStore()
 const roleStore = useRoleStore()
 const userStore = useUserStore()
+const branchStore = useBranchStore()
 const { loading: roleLoading, roles } = storeToRefs(roleStore)
 
 const props = defineProps({
@@ -43,9 +45,12 @@ const emit = defineEmits(['update:modelValue', 'created', 'updated'])
 const { showErrorSnackbar } = snackbarStore
 const { fetchRoles } = roleStore
 const { updateUser, storeUser } = userStore
+const { fetchAllBranchesByLoggedBank } = branchStore
 
 const form = ref<typeof Form>()
 const actionLoading = ref(false)
+const branchLoading = ref(false)
+const branches = ref<BranchI[]>([])
 
 const dialogTitle = computed(() => (props.action === 'create' ? 'User created' : 'User updated'))
 const dialog = computed({
@@ -60,7 +65,8 @@ const initialValues = computed(() => {
   if (props.action === 'update') {
     return {
       ...props.entity,
-      roleId: props.entity?.roles?.[0]?.id || null
+      roleId: props.entity?.roles?.[0]?.id || null,
+      branchId: props.entity?.branch?.id || null
     }
   }
   return {}
@@ -77,6 +83,15 @@ const fields = computed(() => [
     type: 'select',
     items: roles.value,
     loading: roleLoading.value
+  },
+  {
+    name: 'branchId',
+    placeholder: 'Please select branch',
+    label: 'Branch',
+    type: 'select',
+    items: branches.value,
+    loading: branchLoading.value,
+    itemTitle: 'label'
   }
 ])
 
@@ -85,6 +100,8 @@ const formSchema = object({
     .max(255)
     .required('Please fill in the e-mail')
     .email('Please enter a valid email address'),
+  branchId: number()
+    .required('Please select a branch'),
   validateMaxAmountCDF: number()
     .nullable()
     .transform((value: unknown, originalValue: unknown) => (originalValue === '' ? null : value)),
@@ -122,5 +139,20 @@ async function onSubmit () {
   }
 }
 
+function fetchAllBranches () {
+  branchLoading.value = true
+  fetchAllBranchesByLoggedBank()
+    .then((data) => {
+      branches.value = data
+    })
+    .catch(() => {
+      showErrorSnackbar('Failed to fetch branches')
+    })
+    .finally(() => {
+      branchLoading.value = false
+    })
+}
+
 fetchRoles()
+fetchAllBranches()
 </script>
