@@ -18,6 +18,9 @@
       <template #[`item.amount`]="{ item }">
         {{ formatters.formatPrice(item.amount) }}
       </template>
+      <template #[`item.branch`]="{ item }">
+        {{ item.branch?.label }}
+      </template>
       <template #[`item.success`]="{ item }">
         <v-chip v-if="!item.checkerId" append>
           <v-icon start icon="mdi-clock-outline" />
@@ -80,6 +83,11 @@ const headers = [
   {
     title: 'Currency',
     key: 'currency'
+  },
+  {
+    title: 'Branch',
+    key: 'branch',
+    sortable: false
   },
   {
     title: 'Status',

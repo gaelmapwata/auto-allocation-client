@@ -7,7 +7,7 @@ import { BranchI } from '../types/branch'
 export const useBranchStore = defineStore('branch', {
   actions: {
     // eslint-disable-next-line max-len
-    fetchranchesByLoggedBank ({ page, limit }: { page: number, limit: number }): Promise<HttpPaginationResponseI<BranchI[]>> {
+    fetchBranchesByLoggedBank ({ page, limit }: { page: number, limit: number }): Promise<HttpPaginationResponseI<BranchI[]>> {
       return new Promise((resolve) => {
         useFetchApi('/branches/by-logged-bank', {
           method: 'get',

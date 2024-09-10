@@ -77,7 +77,7 @@
     <v-card density="compact" class="mt-1 mb-4" rounded="xl" elevation="0">
       <template #text>
         <v-list class="py-0">
-          <v-list-item color="primary" rounded="xl" @click="signOut({ callbackUrl: '/login' })">
+          <v-list-item color="primary" rounded="xl" @click="onSignOut()">
             <template #prepend>
               <div class="sidebar-link-icon">
                 <v-icon icon="mdi-logout-variant" />
@@ -95,7 +95,9 @@
 <script lang="ts" setup>
 import { PERMISSIONS, userHasOneOfPermissions } from '@/utilities/auth.util'
 import { UserI } from '~/types/user'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const { signOut, data: currentUserData } = useAuth()
 const currentUser = currentUserData.value as UserI
 
@@ -159,10 +161,24 @@ const groupedMenuItems: Array<{
         icon: 'mdi-security',
         to: '/admin/roles',
         permissions: [PERMISSIONS.ROLE.READ]
+      },
+      {
+        text: 'Branches',
+        icon: 'mdi-domain',
+        to: '/admin/branches',
+        permissions: [PERMISSIONS.BRANCH.READ]
       }
     ]
   }
 ]
+
+async function onSignOut () {
+  try {
+    await signOut({ callbackUrl: '/login' })
+  } catch (error) {
+    router.push('/login')
+  }
+}
 </script>
 
 <style type="scss">

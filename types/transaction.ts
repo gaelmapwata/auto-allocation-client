@@ -1,3 +1,4 @@
+import { BranchI } from './branch'
 import { UserI } from './user'
 
 export interface TransactionI {
@@ -19,4 +20,5 @@ export interface TransactionI {
   checker?: UserI;
   drAcctNum: string;
   crAcctNum: string;
+  branch?: BranchI;
 }
