@@ -89,7 +89,7 @@
               v-if="userHasOneOfPermissions(
                 currentUser,
                 [PERMISSIONS.TRANSACTION.REVALIDATE]
-              ) && item.error"
+              ) && item.errorAirtelMoney"
               :disabled="revalidateTransactionLoadings.some(loading => loading)"
               :loading="revalidateTransactionLoadings[item.id]"
               elevation="0"
