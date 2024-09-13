@@ -122,6 +122,23 @@ export const useTransactionStore = defineStore('transaction', {
           }
         })
       })
+    },
+    reValidateTransaction (transactionId: number): Promise<TransactionI> {
+      return new Promise((resolve, reject) => {
+        useFetchApi(`/transactions/${transactionId}/re-validate`, {
+          method: 'put'
+        }).then(({ data }) => {
+          if (data.value) {
+            const snackbarStore = useSnackbarStore()
+            const { showSuccessSnackbar } = snackbarStore
+            showSuccessSnackbar('Transaction successfully completed')
+
+            resolve(data.value)
+          } else {
+            reject()
+          }
+        })
+      })
     }
   }
 })

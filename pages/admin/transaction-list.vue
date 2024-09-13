@@ -84,6 +84,24 @@
               </template>
             </v-tooltip>
           </template>
+          <template #[`item.actions`]="{ item }">
+            <v-btn
+              v-if="userHasOneOfPermissions(
+                currentUser,
+                [PERMISSIONS.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE]
+              ) && item.error"
+              :disabled="revalidateTransactionLoadings.some(loading => loading)"
+              :loading="revalidateTransactionLoadings[item.id]"
+              elevation="0"
+              width="150"
+              rounded="xl"
+              append-icon="mdi-check"
+              color="green"
+              @click="revalidateTransaction(item)"
+            >
+              <span class="text-none">Re-Validate</span>
+            </v-btn>
+          </template>
         </v-data-table-server>
       </v-card-text>
     </v-card>
@@ -115,7 +133,7 @@ const currentUser = currentUserData.value as UserI
 
 const transactionStore = useTransactionStore()
 const snackbarStore = useSnackbarStore()
-const { fetchTransactions, exportTransactions } = transactionStore
+const { fetchTransactions, exportTransactions, reValidateTransaction } = transactionStore
 const { showSuccessSnackbar } = snackbarStore
 
 const itemsPerPage = ref(10)
@@ -126,6 +144,7 @@ const filter = ref<Record<string, string | boolean | number>>({
   success: true
 })
 const totalItems = ref(0)
+const revalidateTransactionLoadings = ref<boolean[]>([])
 
 const headers = [
   {
@@ -173,6 +192,11 @@ const headers = [
     title: 'Status',
     key: 'success',
     sortable: false
+  },
+  {
+    title: 'Actions',
+    key: 'actions',
+    sortable: false
   }
 ]
 
@@ -201,6 +225,15 @@ function handleExportCsv () {
 
 function handleExportTransactions () {
   exportTransactions(filter.value)
+}
+
+function revalidateTransaction (transaction: TransactionI) {
+  revalidateTransactionLoadings.value[transaction.id] = true
+  reValidateTransaction(transaction.id)
+    .finally(() => {
+      revalidateTransactionLoadings.value[transaction.id] = false
+      loadTransactions()
+    })
 }
 
 loadTransactions()
