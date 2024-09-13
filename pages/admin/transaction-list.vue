@@ -88,7 +88,7 @@
             <v-btn
               v-if="userHasOneOfPermissions(
                 currentUser,
-                [PERMISSIONS.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE]
+                [PERMISSIONS.TRANSACTION.REVALIDATE]
               ) && item.error"
               :disabled="revalidateTransactionLoadings.some(loading => loading)"
               :loading="revalidateTransactionLoadings[item.id]"
