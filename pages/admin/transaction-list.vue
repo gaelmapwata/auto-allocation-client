@@ -89,17 +89,34 @@
               v-if="userHasOneOfPermissions(
                 currentUser,
                 [PERMISSIONS.TRANSACTION.REVALIDATE]
-              ) && item.errorAirtelMoney"
-              :disabled="revalidateTransactionLoadings.some(loading => loading)"
+              ) && !item.success && item.isAuthorized && item.errorAirtelMoney"
+              :disabled="actionInLoading"
               :loading="revalidateTransactionLoadings[item.id]"
               elevation="0"
               width="150"
               rounded="xl"
               append-icon="mdi-check"
               color="green"
-              @click="revalidateTransaction(item)"
+              @click="onRevalidateTransaction(item)"
             >
               <span class="text-none">Re-Validate</span>
+            </v-btn>
+
+            <v-btn
+              v-if="userHasOneOfPermissions(
+                currentUser,
+                [PERMISSIONS.TRANSACTION.AUTHORIZE_REVALIDATION]
+              ) && !item.success && item.errorAirtelMoney"
+              :disabled="actionInLoading"
+              :loading="authorizeRevalidationTransactionLoadings[item.id]"
+              elevation="0"
+              width="150"
+              rounded="xl"
+              append-icon="mdi-check"
+              color="green"
+              @click="onAuthorizeToRevalidateTransaction(item)"
+            >
+              <span class="text-none">Authorize revalidation</span>
             </v-btn>
           </template>
         </v-data-table-server>
@@ -133,7 +150,12 @@ const currentUser = currentUserData.value as UserI
 
 const transactionStore = useTransactionStore()
 const snackbarStore = useSnackbarStore()
-const { fetchTransactions, exportTransactions, reValidateTransaction } = transactionStore
+const {
+  fetchTransactions,
+  exportTransactions,
+  reValidateTransaction,
+  authorizeToReValidateTransaction
+} = transactionStore
 const { showSuccessSnackbar } = snackbarStore
 
 const itemsPerPage = ref(10)
@@ -145,6 +167,11 @@ const filter = ref<Record<string, string | boolean | number>>({
 })
 const totalItems = ref(0)
 const revalidateTransactionLoadings = ref<boolean[]>([])
+const authorizeRevalidationTransactionLoadings = ref<boolean[]>([])
+
+// eslint-disable-next-line max-len
+const actionInLoading = computed(() => revalidateTransactionLoadings.value.some(loading => loading) ||
+  authorizeRevalidationTransactionLoadings.value.some(loading => loading))
 
 const headers = [
   {
@@ -227,9 +254,18 @@ function handleExportTransactions () {
   exportTransactions(filter.value)
 }
 
-function revalidateTransaction (transaction: TransactionI) {
+function onRevalidateTransaction (transaction: TransactionI) {
   revalidateTransactionLoadings.value[transaction.id] = true
   reValidateTransaction(transaction.id)
+    .finally(() => {
+      revalidateTransactionLoadings.value[transaction.id] = false
+      loadTransactions()
+    })
+}
+
+function onAuthorizeToRevalidateTransaction (transaction: TransactionI) {
+  revalidateTransactionLoadings.value[transaction.id] = true
+  authorizeToReValidateTransaction(transaction.id)
     .finally(() => {
       revalidateTransactionLoadings.value[transaction.id] = false
       loadTransactions()

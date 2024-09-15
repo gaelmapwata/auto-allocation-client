@@ -139,6 +139,40 @@ export const useTransactionStore = defineStore('transaction', {
           }
         })
       })
+    },
+    authorizeToReValidateTransaction (transactionId: number): Promise<TransactionI> {
+      return new Promise((resolve, reject) => {
+        useFetchApi(`/transactions/${transactionId}/authorize-revalidation`, {
+          method: 'put'
+        }).then(({ data }) => {
+          if (data.value) {
+            const snackbarStore = useSnackbarStore()
+            const { showSuccessSnackbar } = snackbarStore
+            showSuccessSnackbar('Transaction revalidation authorized')
+
+            resolve(data.value)
+          } else {
+            reject()
+          }
+        })
+      })
+    },
+    cancelTransaction (transactionId: number): Promise<TransactionI> {
+      return new Promise((resolve, reject) => {
+        useFetchApi(`/transactions/${transactionId}/cancel`, {
+          method: 'put'
+        }).then(({ data }) => {
+          if (data.value) {
+            const snackbarStore = useSnackbarStore()
+            const { showSuccessSnackbar } = snackbarStore
+            showSuccessSnackbar('Transaction successfully canceled')
+
+            resolve(data.value)
+          } else {
+            reject()
+          }
+        })
+      })
     }
   }
 })

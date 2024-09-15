@@ -41,7 +41,7 @@
           <template #[`item.actions`]="{ item }">
             <v-btn
               v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.VALIDATE])"
-              :disabled="confirmTransactionLoadings.some(loading => loading) || !currentUserCanValidateTransaction(item)"
+              :disabled="actionInLoading || !currentUserCanValidateTransaction(item)"
               :loading="confirmTransactionLoadings[item.id]"
               elevation="0"
               width="150"
@@ -52,6 +52,20 @@
             >
               <span class="text-none">Validate</span>
             </v-btn>
+
+            <v-btn
+              v-if="userHasOneOfPermissions(currentUser, [PERMISSIONS.TRANSACTION.VALIDATE])"
+              :disabled="actionInLoading || !currentUserCanValidateTransaction(item)"
+              :loading="cancelTransactionLoadings[item.id]"
+              elevation="0"
+              width="150"
+              rounded="xl"
+              append-icon="mdi-check"
+              color="green"
+              @click="showConfirmCancelTransactionDialog(item)"
+            >
+              <span class="text-none">Cancel</span>
+            </v-btn>
           </template>
         </v-data-table-server>
       </v-card-text>
@@ -59,10 +73,18 @@
 
     <CommonConfirmDialog
       v-model="confirmTransactionDialogVisible"
-      :text="textConfirmDeletion"
+      :text="textConfirmTransaction"
       action-icon="mdi-check"
       action-text="Confirm"
       @confirm="onConfirmTransactionValidation"
+    />
+
+    <CommonConfirmDialog
+      v-model="cancelTransactionDialogVisible"
+      :text="textConfirmCancelTransaction"
+      action-icon="mdi-check"
+      action-text="Confirm"
+      @confirm="onCancelTransaction"
     />
   </div>
 </template>
@@ -91,7 +113,7 @@ const { data: currentUserData } = useAuth()
 const currentUser = currentUserData.value as UserI
 
 const transactionStore = useTransactionStore()
-const { fetchTransactionsToValidate, validateTransaction } = transactionStore
+const { fetchTransactionsToValidate, validateTransaction, cancelTransaction } = transactionStore
 
 const itemsPerPage = ref(10)
 const page = ref(1)
@@ -100,14 +122,25 @@ const transactionsLoading = ref(false)
 const filter = ref<Record<string, string | boolean | number>>({})
 const totalItems = ref(0)
 const confirmTransactionDialogVisible = ref(false)
+const cancelTransactionDialogVisible = ref(false)
 const confirmTransactionLoadings = ref<boolean[]>([])
+const cancelTransactionLoadings = ref<boolean[]>([])
 const transactionToValidate = ref<TransactionI>()
 
-const textConfirmDeletion = computed(() => (transactionToValidate.value
+const textConfirmTransaction = computed(() => (transactionToValidate.value
   ? `Do you really want to confirm the
     ${parseFloat((transactionToValidate.value?.amount as number).toString())} ${transactionToValidate.value?.currency}
     of account ${transactionToValidate.value?.drAcctNum} to the account ${transactionToValidate.value?.crAcctNum}`
   : 'No transactions selected'))
+
+const textConfirmCancelTransaction = computed(() => (transactionToValidate.value
+  ? `Do you really want to cancel the
+    ${parseFloat((transactionToValidate.value?.amount as number).toString())} ${transactionToValidate.value?.currency}
+    of account ${transactionToValidate.value?.drAcctNum} to the account ${transactionToValidate.value?.crAcctNum}`
+  : 'No transactions selected'))
+
+const actionInLoading = computed(() => confirmTransactionLoadings.value.some(loading => loading) ||
+  cancelTransactionLoadings.value.some(loading => loading))
 
 const headers = [
   {
@@ -168,6 +201,11 @@ function showConfirmTransactionValidationDialog (transaction: TransactionI) {
   confirmTransactionDialogVisible.value = true
 }
 
+function showConfirmCancelTransactionDialog (transaction: TransactionI) {
+  transactionToValidate.value = transaction
+  cancelTransactionDialogVisible.value = true
+}
+
 function onConfirmTransactionValidation () {
   if (!transactionToValidate.value) { return }
 
@@ -177,6 +215,19 @@ function onConfirmTransactionValidation () {
   validateTransaction(transactionId)
     .finally(() => {
       confirmTransactionLoadings.value[transactionId] = false
+      loadTransactions()
+    })
+}
+
+function onCancelTransaction () {
+  if (!transactionToValidate.value) { return }
+
+  const transactionId = transactionToValidate.value.id as number
+
+  cancelTransactionLoadings.value[transactionId] = true
+  cancelTransaction(transactionId)
+    .finally(() => {
+      cancelTransactionLoadings.value[transactionId] = false
       loadTransactions()
     })
 }
