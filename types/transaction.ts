@@ -20,5 +20,6 @@ export interface TransactionI {
   checker?: UserI;
   drAcctNum: string;
   crAcctNum: string;
+  isAuthorized: boolean;
   branch?: BranchI;
 }
