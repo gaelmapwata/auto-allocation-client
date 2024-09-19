@@ -61,7 +61,7 @@
               width="150"
               rounded="xl"
               append-icon="mdi-check"
-              color="green"
+              color="gray"
               @click="showConfirmCancelTransactionDialog(item)"
             >
               <span class="text-none">Cancel</span>
