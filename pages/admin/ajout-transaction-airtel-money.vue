@@ -145,7 +145,7 @@
                       variant="solo-filled"
                       label="Insert customer account number"
                       placeholder="Account number"
-                      type="number"
+                      type="text"
                       rounded
                       flat
                     />
