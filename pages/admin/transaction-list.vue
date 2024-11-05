@@ -163,7 +163,7 @@ const page = ref(1)
 const transactions = ref<TransactionI[]>([])
 const transactionsLoading = ref(false)
 const filter = ref<Record<string, string | boolean | number>>({
-  success: true
+  success: false
 })
 const totalItems = ref(0)
 const revalidateTransactionLoadings = ref<boolean[]>([])
