@@ -121,7 +121,24 @@
                 </div>
 
                 <div v-if="canManuallySetAccountNumber" class="my-5">
-                  <Field v-slot="{ field, errorMessage }" name="accountNumber">
+                  <div v-if="canUseOwnAccountNumber">
+                    <v-select
+                      v-model="typeAccountSelector"
+                      :items="[
+                        TypeAccountSelectorE.OWN_ACCOUNT,
+                        TypeAccountSelectorE.MANUAL_ACCOUNT
+                      ]"
+                      variant="solo-filled"
+                      label="Compte"
+                      rounded
+                      flat
+                    />
+                  </div>
+                  <Field
+                    v-if="typeAccountSelector === TypeAccountSelectorE.MANUAL_ACCOUNT"
+                    v-slot="{ field, errorMessage }"
+                    name="accountNumber"
+                  >
                     <v-text-field
                       v-bind="field"
                       :error-messages="errorMessage"
@@ -202,6 +219,11 @@ import { CheckKYCResponseI } from '~/types/airtel-money'
 import { PERMISSIONS, shouldHaveOneOfPermissions } from '~/utilities/auth.util'
 import { AUTHORIZED_KYC_GRADE } from '~/utilities/variables.util'
 
+enum TypeAccountSelectorE {
+  OWN_ACCOUNT = 'Caisse',
+  MANUAL_ACCOUNT = 'Manuel'
+}
+
 definePageMeta({
   layout: 'admin',
   middleware: [(_, __, next) => shouldHaveOneOfPermissions({
@@ -226,14 +248,18 @@ const canManuallySetAccountNumber = useUserHasOneOfPermissions([
   PERMISSIONS.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT
 ])
 
+const canUseOwnAccountNumber = useUserHasOneOfPermissions([
+  PERMISSIONS.TRANSACTION.CREATE_WITH_OWN_ACCOOUNT
+])
+
 const stepOneSchema = object({
   msisdn: string().required(),
   currency: string().required()
 })
-const stepTransactionSchema = {
+const stepTransactionSchema = computed(() => ({
   amount: number().positive().required(),
   ...(
-    canManuallySetAccountNumber
+    canManuallySetAccountNumber && typeAccountSelector.value === TypeAccountSelectorE.MANUAL_ACCOUNT
       ? {
           accountNumber: string()
             .required('Account number required')
@@ -242,7 +268,7 @@ const stepTransactionSchema = {
         }
       : {}
   )
-}
+}))
 
 const step = ref('msisdn')
 const msisdnFormRef = ref<typeof Form>()
@@ -253,6 +279,7 @@ const confirmDialogVisible = ref(false)
 const kycDetails = ref<CheckKYCResponseI>()
 const textConfirmDeletion = ref('')
 const currencyKYC = ref(null)
+const typeAccountSelector = ref<TypeAccountSelectorE>()
 
 const isKYCGradeAuthorized = computed(() => kycDetails.value &&
   AUTHORIZED_KYC_GRADE.some(grade => grade.toLowerCase() === kycDetails.value?.grade.toLowerCase()))
@@ -270,6 +297,7 @@ function handleMsisdnDefined (values: { msisdn: string, currency: string }) {
   checkKYCByMsisdn(values.msisdn, values.currency)
     .then((value) => {
       kycDetails.value = value
+      defineTypeAccountSelector()
       defineStep('saveTransaction')
     })
     .finally(() => { fetchKYCLoading.value = false })
@@ -310,4 +338,14 @@ function onConfirmTransaction () {
     })
     .catch(() => { saveLoading.value = false })
 }
+
+function defineTypeAccountSelector () {
+  if (canUseOwnAccountNumber) {
+    typeAccountSelector.value = TypeAccountSelectorE.OWN_ACCOUNT
+  } else if (canManuallySetAccountNumber) {
+    typeAccountSelector.value = TypeAccountSelectorE.MANUAL_ACCOUNT
+  }
+}
+
+defineTypeAccountSelector()
 </script>
