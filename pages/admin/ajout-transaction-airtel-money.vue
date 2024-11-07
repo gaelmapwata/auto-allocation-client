@@ -221,7 +221,7 @@ import { AUTHORIZED_KYC_GRADE } from '~/utilities/variables.util'
 
 enum TypeAccountSelectorE {
   OWN_ACCOUNT = 'Caisse',
-  MANUAL_ACCOUNT = 'Manuel'
+  MANUAL_ACCOUNT = 'Client'
 }
 
 definePageMeta({
