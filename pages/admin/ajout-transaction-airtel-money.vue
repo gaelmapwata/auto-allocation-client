@@ -263,7 +263,6 @@ const stepTransactionSchema = computed(() => ({
       ? {
           accountNumber: string()
             .required('Account number required')
-            .matches(/^[0-9]*$/, 'Account number can only contain digits')
             .length(12, 'Account number must be exactly 12 digits long')
         }
       : {}
